@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.configuration.HrConfigProperties;
+import hu.webuni.hr.gyd.configuration.HrConfigPropertiesWithLists;
 import hu.webuni.hr.gyd.model.Employee;
 
 @Service
@@ -14,12 +15,18 @@ public class DefaultEmployeeService implements EmployeeService {
 	private int defaultPercent;
 	*/
 	
+	/*
 	@Autowired
 	HrConfigProperties config;
+	*/
+	
+	@Autowired
+	HrConfigPropertiesWithLists config;
 	
 	@Override
 	public int getPayRaisePercent(Employee employee) {
-		return config.getEmployee().getDef().getPercent();
+		//return config.getEmployee().getDef().getPercent();
+		return config.getDef();
 	}
 
 }

@@ -1,19 +1,15 @@
 spring:
-  profiles:    active:    - smart
-
+  profiles:    active: smart
 hr:
-  employee:
-    def:
-      percent: 5
-    smart:
-      smartDefault:
-        percent: 0
-      junior:
-        limit: 2.5
-        percent: 2
-      medior:
-        limit: 5
-        percent: 5
-      senior:
-        limit: 10
-        percent: 100
+  def: 5
+  smartDefault: 0
+  
+  limits:
+    - 2.5
+    - 15
+    - 5
+    
+  percents:
+    - 2
+    - 5
+    - 10
