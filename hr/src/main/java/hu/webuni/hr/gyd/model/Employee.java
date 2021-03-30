@@ -10,6 +10,8 @@ public class Employee {
 	private int salary;
 	private LocalDateTime hiringDate;
 	
+	public Employee() {}
+	
 	public Employee(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate) {
 		EmployeeId = employeeId;
 		this.name = name;

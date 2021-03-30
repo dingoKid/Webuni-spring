@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
@@ -29,9 +31,14 @@ public class HrController {
 		employees.put(2L, new EmployeeDto(2L, "Gyetvai Gergely", "worker", 300000, LocalDateTime.of(2013, 7, 11, 0, 0)));
 	}
 	
-	@GetMapping
+	@GetMapping("/all")
 	public List<EmployeeDto> getAllEmployees(){
 		return new ArrayList<>(employees.values());
+	}
+	
+	@GetMapping
+	public List<EmployeeDto> getBySalary(@RequestParam int salary) {
+		return employees.values().stream().filter(e -> e.getSalary() > salary).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/{id}")
@@ -60,7 +67,4 @@ public class HrController {
 			employees.remove(id);
 	}
 	
-	
-	
-
 }

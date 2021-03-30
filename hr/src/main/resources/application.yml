@@ -1,5 +1,5 @@
 spring:
-  profiles:    active: smart
+  profiles:    active: smart  mvc:    format:      date-time: yyyy-MM-dd HH:mm:ss
 hr:
   def: 5
   smartDefault: 0
@@ -13,3 +13,4 @@ hr:
     - 2
     - 5
     - 10
+    

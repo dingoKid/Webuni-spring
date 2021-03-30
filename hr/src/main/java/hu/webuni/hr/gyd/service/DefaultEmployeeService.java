@@ -3,7 +3,6 @@ package hu.webuni.hr.gyd.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import hu.webuni.hr.gyd.configuration.HrConfigProperties;
 import hu.webuni.hr.gyd.configuration.HrConfigPropertiesWithLists;
 import hu.webuni.hr.gyd.model.Employee;
 
