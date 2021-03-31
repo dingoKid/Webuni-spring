@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import hu.webuni.hr.gyd.model.Employee;
@@ -15,7 +16,7 @@ import hu.webuni.hr.gyd.model.Employee;
 @Controller
 public class HrTLController {
 	
-	List<Employee> employees = new ArrayList<Employee>();
+	List<Employee> employees = new ArrayList<Employee>();		// change to MAP
 		
 	{
 			employees.add(new Employee(1L, "Gyetvai Denes", "worker", 200000, LocalDateTime.of(2015, 3, 1, 0, 0)));
@@ -29,8 +30,9 @@ public class HrTLController {
 	
 	@GetMapping("/employees")
 	public String getEmployees(Map<String, Object> model) {
+		System.out.println("getting");
 		model.put("employees", employees);
-		model.put("newEmployee", new Employee());
+		model.put("newEmployee", new Employee());	// küldi át az üres objektumot
 		return "employees";
 	}
 	
@@ -39,6 +41,12 @@ public class HrTLController {
 		if(!employees.stream().map(e -> e.getEmployeeId()).collect(Collectors.toList()).contains(employee.getEmployeeId()))
 			employees.add(employee);
 		return "redirect:employees";
+	}
+	
+	@GetMapping("/employees/delete/{id}")
+	public String deleteEmployee(@PathVariable("id") long id) {
+		employees.remove((int)id-1);
+		return "redirect:/employees";
 	}
 	
 

@@ -31,6 +31,9 @@ table, th, td {
 			<td th:text="${employee.position}">Position</td>
 			<td th:text="${employee.salary}">Salary</td>
 			<td th:text="${employee.hiringDate}">Hiring date</td>
+			<td>
+				<a th:href="@{/employees/delete/{id}(id=${employee.employeeId})}">Töröl</a>
+			</td>
 		</tr>
 	</tbody>
 </table>

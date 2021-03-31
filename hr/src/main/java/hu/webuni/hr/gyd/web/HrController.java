@@ -31,12 +31,12 @@ public class HrController {
 		employees.put(2L, new EmployeeDto(2L, "Gyetvai Gergely", "worker", 300000, LocalDateTime.of(2013, 7, 11, 0, 0)));
 	}
 	
-	@GetMapping("/all")
+	@GetMapping
 	public List<EmployeeDto> getAllEmployees(){
 		return new ArrayList<>(employees.values());
 	}
 	
-	@GetMapping
+	@GetMapping(params = "salary")
 	public List<EmployeeDto> getBySalary(@RequestParam int salary) {
 		return employees.values().stream().filter(e -> e.getSalary() > salary).collect(Collectors.toList());
 	}
