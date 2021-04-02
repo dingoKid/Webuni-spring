@@ -33,19 +33,25 @@ public class CompanyController {
 		companies.put(3L, new CompanyDto(3L, 141414, "Epam", "7555 Budapest, Kossuth utca"));
 		companies.put(4L, new CompanyDto(4L, 151515, "Microsoft", "7988 Szekszárd, Virág utca"));
 		
-		companies.get(1L).getEmployees().add(new EmployeeDto(1L, "Kiss János", "boss", 525000, LocalDateTime.of(2010, 10, 10, 0, 0)));
+		companies.get(1L).getEmployees()
+			.add(new EmployeeDto(1L, "Kiss János", "boss", 525000, LocalDateTime.of(2010, 10, 10, 0, 0)));
 	}
 	
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
 		if(!full) {
-			return companies.values().stream()
+			System.out.println();
+			companies.values().stream().forEach(System.out::println);
+			var temp = new ArrayList<>(companies.values());
+			return temp.stream()
 					.map(company -> {
 						company.setEmployees(new ArrayList<>());
 						return company;
 					})
 					.collect(Collectors.toList());
 		}
+		System.out.println();
+		companies.values().stream().forEach(System.out::println);
 		return companies.values().stream()
 				.collect(Collectors.toList());
 	}
@@ -73,8 +79,38 @@ public class CompanyController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public void deleteCompany(@PathVariable long id) {
-		if(companies.containsKey(id)) companies.remove(id);
+	public ResponseEntity<Boolean> deleteCompany(@PathVariable long id) {
+		if(companies.containsKey(id)) return ResponseEntity.notFound().build();
+		companies.remove(id);
+		return ResponseEntity.ok(true);
+	}
+	
+	@PostMapping("/{companyId}/hire")
+	public ResponseEntity<EmployeeDto> hireEmployee(@PathVariable long companyId, @RequestBody EmployeeDto employee) {
+		if(!companies.containsKey(companyId)) return ResponseEntity.notFound().build();
+		companies.get(companyId).getEmployees().add(employee);
+		return ResponseEntity.ok(employee);
+	}
+	
+	@DeleteMapping("{companyId}/delete/{employeeId}")
+	public ResponseEntity<Boolean> deleteEmployee(@PathVariable long companyId, @PathVariable long employeeId) {
+		if(!companies.containsKey(companyId)
+				|| companies.get(companyId).getEmployees().stream()
+				.noneMatch(e -> e.getEmployeeId() == employeeId)) 
+					return ResponseEntity.notFound().build();
+		
+		var employee = companies.get(companyId).getEmployees().stream()
+				.filter(e -> e.getEmployeeId() == employeeId).findFirst().get();
+		companies.get(companyId).getEmployees().remove(employee);
+		
+		return ResponseEntity.ok(true);
+	}
+	
+	@PutMapping("/{companyId}/swapteam")
+	public ResponseEntity<List<EmployeeDto>> swapEmployees(@PathVariable long companyId, @RequestBody List<EmployeeDto> employees) {
+		if(!companies.containsKey(companyId)) return ResponseEntity.notFound().build();
+		companies.get(companyId).setEmployees(employees);
+		return ResponseEntity.ok(employees);
 	}
 
 }

@@ -51,6 +51,13 @@ public class CompanyDto {
 	public void setEmployees(List<EmployeeDto> employees) {
 		this.employees = employees;
 	}
+
+	@Override
+	public String toString() {
+		return "CompanyDto [companyId=" + companyId + ", tradeRegisterNumber=" + tradeRegisterNumber + ", name=" + name
+				+ ", address=" + address + ", employees=" + employees + "]";
+	}
+
 	
 	
 }
