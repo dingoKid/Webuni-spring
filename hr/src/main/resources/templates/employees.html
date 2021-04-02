@@ -27,7 +27,7 @@ table, th, td {
 	<tbody>
 		<tr th:each="employee : ${employees}">
 			<td th:text="${employee.employeeId}">Id</td>
-			<td th:text="${employee.name}">Name</td>
+			<td><a th:href="@{/employees/edit/{id}(id=${employee.employeeId})}" th:text="${employee.name}">Name</a></td>
 			<td th:text="${employee.position}">Position</td>
 			<td th:text="${employee.salary}">Salary</td>
 			<td th:text="${employee.hiringDate}">Hiring date</td>

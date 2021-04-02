@@ -1,10 +1,8 @@
 package hu.webuni.hr.gyd.web;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +14,13 @@ import hu.webuni.hr.gyd.model.Employee;
 @Controller
 public class HrTLController {
 	
-	List<Employee> employees = new ArrayList<Employee>();		// change to MAP
+	Map<Long, Employee> employees = new HashMap<>();
 		
 	{
-			employees.add(new Employee(1L, "Gyetvai Denes", "worker", 200000, LocalDateTime.of(2015, 3, 1, 0, 0)));
-			employees.add(new Employee(2L, "Gyetvai Gergely", "worker", 300000, LocalDateTime.of(2013, 7, 11, 0, 0)));
+			employees.put(1L, new Employee(1L, "Gyetvai Denes", "worker", 300000, LocalDateTime.of(2015, 3, 1, 0, 0)));
+			employees.put(2L, new Employee(2L, "Kovács János", "manager", 400000, LocalDateTime.of(2013, 7, 11, 0, 0)));
+			employees.put(3L, new Employee(3L, "Kiss Béla", "assistant", 200000, LocalDateTime.of(2008, 1, 11, 0, 0)));
+			employees.put(4L, new Employee(4L, "Nagy Péter", "other", 150000, LocalDateTime.of(2020, 11, 11, 0, 0)));
 	}
 	
 	@GetMapping("/")
@@ -30,22 +30,36 @@ public class HrTLController {
 	
 	@GetMapping("/employees")
 	public String getEmployees(Map<String, Object> model) {
-		System.out.println("getting");
-		model.put("employees", employees);
-		model.put("newEmployee", new Employee());	// küldi át az üres objektumot
+		model.put("employees", employees.values());
+		model.put("newEmployee", new Employee());
 		return "employees";
+	}
+	
+	@GetMapping("/employees/edit/{id}")
+	public String getEmployee(@PathVariable long id, Map<String, Object> model) {
+		var employee = employees.get(id);
+		if(employee == null) return "redirect:/employees";
+		model.put("employee", employee);
+		return "employee";
+	}
+	
+	@PostMapping("/employees/edit")
+	public String editEmployee(Employee employee) {
+		employees.put(employee.getEmployeeId(), employee);
+		return "redirect:/employees";
 	}
 	
 	@PostMapping("/employees")
 	public String addEmployee(Employee employee) {
-		if(!employees.stream().map(e -> e.getEmployeeId()).collect(Collectors.toList()).contains(employee.getEmployeeId()))
-			employees.add(employee);
+		if(!employees.keySet().contains(employee.getEmployeeId()))
+			employees.put(employee.getEmployeeId(), employee);
 		return "redirect:employees";
 	}
 	
 	@GetMapping("/employees/delete/{id}")
 	public String deleteEmployee(@PathVariable("id") long id) {
-		employees.remove((int)id-1);
+		if(employees.keySet().contains(id)) 
+			employees.remove(id);
 		return "redirect:/employees";
 	}
 	
