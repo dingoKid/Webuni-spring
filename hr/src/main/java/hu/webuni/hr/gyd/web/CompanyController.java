@@ -40,18 +40,13 @@ public class CompanyController {
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
 		if(!full) {
-			System.out.println();
-			companies.values().stream().forEach(System.out::println);
-			var temp = new ArrayList<>(companies.values());
-			return temp.stream()
+			return companies.values().stream()
 					.map(company -> {
 						company.setEmployees(new ArrayList<>());
 						return company;
 					})
 					.collect(Collectors.toList());
 		}
-		System.out.println();
-		companies.values().stream().forEach(System.out::println);
 		return companies.values().stream()
 				.collect(Collectors.toList());
 	}
