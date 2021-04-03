@@ -1,7 +1,6 @@
 package hu.webuni.hr.gyd.web;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ import hu.webuni.hr.gyd.dto.EmployeeDto;
 @RequestMapping("/api/companies")
 public class CompanyController {
 	
-	Map<Long, CompanyDto> companies = new HashMap<>();
+	 Map<Long, CompanyDto> companies = new HashMap<>();
 	
 	{
 		companies.put(1L, new CompanyDto(1L, 121212, "IBM", "7632 Pécs, Lahti utca"));
@@ -41,10 +40,7 @@ public class CompanyController {
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
 		if(!full) {
 			return companies.values().stream()
-					.map(company -> {
-						company.setEmployees(new ArrayList<>());
-						return company;
-					})
+					.map(c -> new CompanyDto(c.getCompanyId(), c.getTradeRegisterNumber(), c.getName(), c.getAddress()))
 					.collect(Collectors.toList());
 		}
 		return companies.values().stream()
@@ -52,10 +48,13 @@ public class CompanyController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<CompanyDto> getById(@PathVariable long id) {
-		return companies.keySet().contains(id) 
-				? ResponseEntity.ok(companies.get(id)) 
-				: ResponseEntity.notFound().build();
+	public ResponseEntity<CompanyDto> getById(@RequestParam(required = false, defaultValue = "false") boolean full, @PathVariable long id) {
+		if(!companies.containsKey(id)) {
+			ResponseEntity.notFound().build();
+		}
+		var company = companies.get(id);
+		if(full) return ResponseEntity.ok(company);
+		return ResponseEntity.ok(new CompanyDto(company.getCompanyId(), company.getTradeRegisterNumber(), company.getName(), company.getAddress()));
 	}
 	
 	@PostMapping
