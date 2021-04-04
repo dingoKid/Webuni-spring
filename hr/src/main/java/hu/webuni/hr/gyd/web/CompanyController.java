@@ -40,7 +40,7 @@ public class CompanyController {
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
 		if(!full) {
 			return companies.values().stream()
-					.map(c -> new CompanyDto(c.getCompanyId(), c.getTradeRegisterNumber(), c.getName(), c.getAddress()))
+					.map(c -> new CompanyDto(c))
 					.collect(Collectors.toList());
 		}
 		return companies.values().stream()
@@ -54,7 +54,7 @@ public class CompanyController {
 		}
 		var company = companies.get(id);
 		if(full) return ResponseEntity.ok(company);
-		return ResponseEntity.ok(new CompanyDto(company.getCompanyId(), company.getTradeRegisterNumber(), company.getName(), company.getAddress()));
+		return ResponseEntity.ok(new CompanyDto(company));
 	}
 	
 	@PostMapping

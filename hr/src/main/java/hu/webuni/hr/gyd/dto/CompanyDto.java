@@ -19,6 +19,14 @@ public class CompanyDto {
 		employees = new ArrayList<>();
 	}
 	
+	// copy constructor
+	public CompanyDto(CompanyDto company) {
+		this.companyId = company.companyId;
+		this.tradeRegisterNumber = company.tradeRegisterNumber;
+		this.name = company.name;
+		this.address = company.address;
+	}
+	
 	public long getCompanyId() {
 		return companyId;
 	}
