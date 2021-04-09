@@ -7,7 +7,7 @@ import hu.webuni.hr.gyd.configuration.HrConfigPropertiesWithLists;
 import hu.webuni.hr.gyd.model.Employee;
 
 @Service
-public class DefaultEmployeeService implements EmployeeService {
+public class DefaultEmployeeService extends EmployeeServices {
 
 	/*
 	@Value("${hr.employee.def.percent}")

@@ -2,12 +2,24 @@ package hu.webuni.hr.gyd.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
+
 public class EmployeeDto {
 	
 	private Long EmployeeId;
+	
+	@NotEmpty
 	private String name;
+	
+	@NotEmpty
 	private String position;
+	
+	@Positive
 	private int salary;
+	
+	@Past
 	private LocalDateTime hiringDate;
 	
 	public EmployeeDto(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate) {

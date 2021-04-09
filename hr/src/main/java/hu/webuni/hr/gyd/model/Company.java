@@ -1,40 +1,23 @@
-package hu.webuni.hr.gyd.dto;
+package hu.webuni.hr.gyd.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
+public class Company {
 
-public class CompanyDto {
-
-	private long companyId;
-	
-	@Positive
+	private long companyId;	
 	private long tradeRegisterNumber;
-	
-	@NotEmpty
 	private String name;
-		
-	@NotEmpty
 	private String address;
-	private List<EmployeeDto> employees;
+	private List<Employee> employees;
 	
-	public CompanyDto() {}
+	public Company() { }
 			
-	public CompanyDto(long companyId, long tradeRegisterNumber, String name, String address) {
+	public Company(long companyId, long tradeRegisterNumber, String name, String address) {
 		this.companyId = companyId;
 		this.tradeRegisterNumber = tradeRegisterNumber;
 		this.name = name;
 		this.address = address;
-		employees = new ArrayList<>();
-	}
-	
-	public CompanyDto(CompanyDto company) {
-		this.companyId = company.companyId;
-		this.tradeRegisterNumber = company.tradeRegisterNumber;
-		this.name = company.name;
-		this.address = company.address;
 		employees = new ArrayList<>();
 	}
 	
@@ -64,10 +47,10 @@ public class CompanyDto {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public List<EmployeeDto> getEmployees() {
+	public List<Employee> getEmployees() {
 		return employees;
 	}
-	public void setEmployees(List<EmployeeDto> employees) {
+	public void setEmployees(List<Employee> employees) {
 		this.employees = employees;
 	}
 

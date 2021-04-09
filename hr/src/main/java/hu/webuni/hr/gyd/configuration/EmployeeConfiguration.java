@@ -6,13 +6,18 @@ import org.springframework.context.annotation.Profile;
 
 import hu.webuni.hr.gyd.service.DefaultEmployeeService;
 import hu.webuni.hr.gyd.service.EmployeeService;
+import hu.webuni.hr.gyd.service.EmployeeServices;
 
 @Configuration
 @Profile("!smart")
 public class EmployeeConfiguration {
 
 	@Bean
-	public EmployeeService employeeService() {
+	public EmployeeServices employeeServices() {
+		return new DefaultEmployeeService();
+	}
+	
+	@Bean EmployeeService employeeService() {
 		return new DefaultEmployeeService();
 	}
 }

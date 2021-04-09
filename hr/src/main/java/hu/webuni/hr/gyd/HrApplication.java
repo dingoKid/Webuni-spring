@@ -27,11 +27,9 @@ public class HrApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
-		Employee e1 = new Employee(1L, "kd", "worker", 100000, LocalDateTime.of(2003, 2, 2, 0, 0));
-		
+		Employee e1 = new Employee(1L, "kd", "worker", 100000, LocalDateTime.of(2003, 2, 2, 0, 0));		
 		salaryService.setNewSalary(e1);
 		System.out.println(e1.getSalary());
-		
 	}
 
 }
