@@ -74,7 +74,31 @@ public class EmployeeDto {
 	public String toString() {
 		return "Employee [EmployeeId=" + EmployeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
 				+ ", hiringDate=" + hiringDate + "]";
-	}	
-	
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((EmployeeId == null) ? 0 : EmployeeId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EmployeeDto other = (EmployeeDto) obj;
+		if (EmployeeId == null) {
+			if (other.EmployeeId != null)
+				return false;
+		} else if (!EmployeeId.equals(other.EmployeeId))
+			return false;
+		return true;
+	}
 	
 }
