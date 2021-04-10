@@ -23,11 +23,10 @@ public class EmployeeControllerIT {
 
 	@Test
 	void testThatEmployeeIsAdded() throws Exception {
-		List<EmployeeDto> employeesBefore = getAllEmployees();
-		
+		List<EmployeeDto> employeesBefore = getAllEmployees();		
 		EmployeeDto newEmployee = new EmployeeDto(5L, "kiss imre", "driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
-		addEmployee(newEmployee);
 		
+		addEmployee(newEmployee);
 		List<EmployeeDto> employeesAfter = getAllEmployees();
 		employeesAfter.removeAll(employeesBefore);
 		
@@ -35,47 +34,108 @@ public class EmployeeControllerIT {
 	}
 	
 	@Test
-	void testThatEmployeeValidationFailsNoPositionSpecified() throws Exception {
+	void testThatEmployeeValidationFailsNoPositionSpecifiedWhenAdding() throws Exception {
 		List<EmployeeDto> employeesBefore = getAllEmployees();
-		
 		EmployeeDto newEmployee = new EmployeeDto(5L, "kiss imre", "", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
+
 		addEmployeeExpectedBadRequest(newEmployee);
-		
 		List<EmployeeDto> employeesAfter = getAllEmployees();
+
+		assertThat(employeesBefore).hasSameElementsAs(employeesAfter);
 		employeesAfter.removeAll(employeesBefore);
-		
 		assertThat(employeesAfter).size().isEqualTo(0);
 	}
 	
 	@Test
-	void testThatEmployeeValidationFailsNoNameSpecified() throws Exception {
+	void testThatEmployeeValidationFailsNoNameSpecifiedWhenAdding() throws Exception {
 		List<EmployeeDto> employeesBefore = getAllEmployees();
-		
 		EmployeeDto newEmployee = new EmployeeDto(5L, "", "driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
+
 		addEmployeeExpectedBadRequest(newEmployee);
-		
 		List<EmployeeDto> employeesAfter = getAllEmployees();
+	
+		assertThat(employeesBefore).hasSameElementsAs(employeesAfter);
 		employeesAfter.removeAll(employeesBefore);
+		assertThat(employeesAfter).size().isEqualTo(0);
+	}
+
+	@Test
+	void testThatEmployeeValidationFailsFutureDateSpecifiedWhenAdding() throws Exception {
+		List<EmployeeDto> employeesBefore = getAllEmployees();
+		EmployeeDto newEmployee = new EmployeeDto(15L, "kiss imre", "driver", 150000, LocalDateTime.now().plusHours(1));
+
+		addEmployeeExpectedBadRequest(newEmployee);
+		List<EmployeeDto> employeesAfter = getAllEmployees();
 		
+		assertThat(employeesBefore).hasSameElementsAs(employeesAfter);
+		employeesAfter.removeAll(employeesBefore);		
 		assertThat(employeesAfter).size().isEqualTo(0);
 	}
 	
 	@Test
 	void testThatEmployeeIsModified() throws Exception {
 		EmployeeDto employeeBefore = getById(1L);
-		
-		/*EmployeeDto modifiedEmployee = new EmployeeDto(employeeBefore.getEmployeeId(), employeeBefore.getName(),
-										employeeBefore.getPosition(), employeeBefore.getSalary(), employeeBefore.getHiringDate());*/
-		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
+		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "worker", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		
 		modifyEmployee(employeeBefore.getEmployeeId(), modifierEmployee);
-		
 		EmployeeDto newEmployee = getById(1L);
 		
 		assertThat(newEmployee).usingRecursiveComparison().isEqualTo(modifierEmployee);
+	}
+	
+	@Test
+	void testThatEmployeeIdNotExistInDatabaseWhenModifying() throws Exception {
+		EmployeeDto employeeBefore = getByIdExpectedNotFound(35L);
+
+		assertThat(employeeBefore).isEqualTo(new EmployeeDto(null, null, null, 0, null));
+	}
+	
+	@Test
+	void testThatEmployeeValidationFailsNoNameSpecifiedWhenModifying() throws Exception {
+		EmployeeDto employeeBefore = getById(1L);
+		EmployeeDto modifierEmployee = new EmployeeDto(1L, "", "worker", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		
+		modifyEmployeeExpectedBadRequest(employeeBefore.getEmployeeId(), modifierEmployee);
+		EmployeeDto newEmployee = getById(1L);
 		
+		assertThat(newEmployee).usingRecursiveComparison().isNotEqualTo(modifierEmployee);
+		assertThat(newEmployee).usingRecursiveComparison().isEqualTo(employeeBefore);
+	}
+	
+	@Test
+	void testThatEmployeeValidationFailsNoPositionSpecifiedWhenModifying() throws Exception {
+		EmployeeDto employeeBefore = getById(1L);
+		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		
+		modifyEmployeeExpectedBadRequest(employeeBefore.getEmployeeId(), modifierEmployee);
+		EmployeeDto newEmployee = getById(1L);
+		
+		assertThat(newEmployee).usingRecursiveComparison().isNotEqualTo(modifierEmployee);
+		assertThat(newEmployee).usingRecursiveComparison().isEqualTo(employeeBefore);
+	}
+	
+	@Test
+	void testThatEmployeeValidationFailsZeroSalaryAddedWhenModifying() throws Exception {
+		EmployeeDto employeeBefore = getById(1L);
+		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "driver", 0, LocalDateTime.of(2015, 11, 10, 0, 0));
+		
+		modifyEmployeeExpectedBadRequest(employeeBefore.getEmployeeId(), modifierEmployee);
+		EmployeeDto newEmployee = getById(1L);
+		
+		assertThat(newEmployee).usingRecursiveComparison().isNotEqualTo(modifierEmployee);
+		assertThat(newEmployee).usingRecursiveComparison().isEqualTo(employeeBefore);
+	}
+	
+	@Test
+	void testThatEmployeeValidationFailsNegativeSalaryAddedWhenModifying() throws Exception {
+		EmployeeDto employeeBefore = getById(1L);
+		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "driver", -10000, LocalDateTime.of(2015, 11, 10, 0, 0));
+		
+		modifyEmployeeExpectedBadRequest(employeeBefore.getEmployeeId(), modifierEmployee);
+		EmployeeDto newEmployee = getById(1L);
+		
+		assertThat(newEmployee).usingRecursiveComparison().isNotEqualTo(modifierEmployee);
+		assertThat(newEmployee).usingRecursiveComparison().isEqualTo(employeeBefore);
 	}
 	
 	private void modifyEmployee(long employeeId, EmployeeDto modifierEmployee) {
@@ -88,6 +148,17 @@ public class EmployeeControllerIT {
 			.isOk();
 		
 	}
+	
+	private void modifyEmployeeExpectedBadRequest(long employeeId, EmployeeDto modifierEmployee) {
+		webTestClient
+			.put()
+			.uri(BASE_URI + "/" + employeeId)
+			.bodyValue(modifierEmployee)
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
+		
+	}
 
 	private EmployeeDto getById(long employeeId) {
 		return webTestClient
@@ -95,6 +166,16 @@ public class EmployeeControllerIT {
 			.uri(BASE_URI + "/" + employeeId)
 			.exchange()
 			.expectStatus().isOk()
+			.expectBody(EmployeeDto.class)
+			.returnResult().getResponseBody();
+	}
+	
+	private EmployeeDto getByIdExpectedNotFound(long employeeId) {
+		return webTestClient
+			.get()
+			.uri(BASE_URI + "/" + employeeId)
+			.exchange()
+			.expectStatus().isEqualTo(404)
 			.expectBody(EmployeeDto.class)
 			.returnResult().getResponseBody();
 	}
@@ -108,7 +189,6 @@ public class EmployeeControllerIT {
 			.expectStatus()
 			//.isEqualTo(400)
 			.isBadRequest();
-		
 	}
 
 	private void addEmployee(EmployeeDto newEmployee) {
