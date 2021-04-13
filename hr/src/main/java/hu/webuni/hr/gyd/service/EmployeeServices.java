@@ -21,12 +21,6 @@ public abstract class EmployeeServices implements EmployeeService {
 		return new ArrayList<>(employees.values());
 	}
 	
-	/*public List<Employee> getBySalary(int salary) {
-		return employees.values().stream()
-				.filter(e -> e.getSalary() > salary)
-				.collect(Collectors.toList());
-	}*/
-	
 	public Employee getById(long id) {
 		return employees.get(id);
 	}

@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
-import hu.webuni.hr.gyd.service.EmployeeServices;
+import hu.webuni.hr.gyd.service.EmployeeService;
 import hu.webuni.hr.gyd.service.NonUniqueIdException;
 
 @RestController
@@ -28,26 +28,26 @@ import hu.webuni.hr.gyd.service.NonUniqueIdException;
 public class EmployeeController {
 	
 	@Autowired
-	EmployeeServices employeeServices;
+	EmployeeService employeeService;
 	
 	@Autowired
 	EmployeeMapper mapper;
 	
 	@GetMapping
 	public List<EmployeeDto> getAllEmployees(){
-		return mapper.employeesToDtos(employeeServices.getAll());
+		return mapper.employeesToDtos(employeeService.getAll());
 	}
 	
 	@GetMapping(params = "salary")
 	public List<EmployeeDto> getBySalary(@RequestParam int salary) {
-		return mapper.employeesToDtos(employeeServices.getAll().stream()
+		return mapper.employeesToDtos(employeeService.getAll().stream()
 										.filter(e -> e.getSalary() > salary)
 										.collect(Collectors.toList()));
 	}
 	
 	@GetMapping("/{id}")
 	public EmployeeDto getById(@PathVariable long id) {
-		var employee = employeeServices.getById(id);
+		var employee = employeeService.getById(id);
 		if(employee == null) 
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		return mapper.employeeToDto(employee);
@@ -55,26 +55,26 @@ public class EmployeeController {
 	
 	@PostMapping
 	public EmployeeDto addEmployee(@RequestBody @Valid EmployeeDto employee) {
-		if(employeeServices.getById(employee.getEmployeeId()) != null)
+		if(employeeService.getById(employee.getEmployeeId()) != null)
 			throw new NonUniqueIdException();
-		employeeServices.saveEmployee(mapper.DtoToEmployee(employee));
+		employeeService.saveEmployee(mapper.DtoToEmployee(employee));
 		return employee;
 	}
 	
 	@PutMapping("/{id}")
 	public EmployeeDto modifyEmployee(@PathVariable long id, @RequestBody @Valid EmployeeDto employee) {
-		if(employeeServices.getById(id) == null)
+		if(employeeService.getById(id) == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		employee.setEmployeeId(id);
-		employeeServices.editEmployee(id, mapper.DtoToEmployee(employee));
+		employeeService.editEmployee(id, mapper.DtoToEmployee(employee));
 		return employee;
 	}
 	
 	@DeleteMapping("/{id}")
 	public void deleteEmployee(@PathVariable long id) {
-		if(employeeServices.getById(id) == null)
+		if(employeeService.getById(id) == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		employeeServices.deleteEmployee(id);
+		employeeService.deleteEmployee(id);
 	}
 	
 }
