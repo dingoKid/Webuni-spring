@@ -2,22 +2,34 @@ package hu.webuni.hr.gyd.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class Employee {
 	
+	@Id
+	@GeneratedValue
 	private Long EmployeeId;
 	private String name;
 	private String position;
 	private int salary;
 	private LocalDateTime hiringDate;
 	
+	@ManyToOne
+	private Company company;
+	
 	public Employee() {}
 	
-	public Employee(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate) {
+	public Employee(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate, Company company) {
 		EmployeeId = employeeId;
 		this.name = name;
 		this.position = position;
 		this.salary = salary;
 		this.hiringDate = hiringDate;
+		this.company = company;
 	}
 
 	public Long getEmployeeId() {
@@ -58,13 +70,23 @@ public class Employee {
 
 	public void setHiringDate(LocalDateTime hiringDate) {
 		this.hiringDate = hiringDate;
+	}	
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 	@Override
 	public String toString() {
 		return "Employee [EmployeeId=" + EmployeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
-				+ ", hiringDate=" + hiringDate + "]";
-	}	
+				+ ", hiringDate=" + hiringDate + ", company=" + company + "]";
+	}
+
+		
 	
 	
 }

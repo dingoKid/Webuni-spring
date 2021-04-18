@@ -3,12 +3,23 @@ package hu.webuni.hr.gyd.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+@Entity
 public class Company {
 
-	private long companyId;	
+	@Id
+	@GeneratedValue
+	private long companyId;
+	
 	private long tradeRegisterNumber;
 	private String name;
 	private String address;
+	
+	@OneToMany(mappedBy = "company")
 	private List<Employee> employees;
 	
 	public Company() { }

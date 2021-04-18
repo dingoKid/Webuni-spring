@@ -1,6 +1,7 @@
 package hu.webuni.hr.gyd.web;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -23,8 +24,8 @@ import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.mapper.CompanyMapper;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Company;
+import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.service.CompanyService;
-import hu.webuni.hr.gyd.service.NonUniqueIdException;
 
 @RestController
 @RequestMapping("/api/companies")
@@ -32,7 +33,7 @@ public class CompanyController {
 	
 	@Autowired 
 	CompanyService companyService;
-	
+		
 	@Autowired
 	CompanyMapper companyMapper;
 	
@@ -51,46 +52,54 @@ public class CompanyController {
 	
 	@GetMapping("/{id}")
 	public CompanyDto getById(@RequestParam(required = false, defaultValue = "false") boolean full, @PathVariable long id) {
-		Company company = companyService.getById(id);
-		if(company == null) {
+		try {
+			Company company = companyService.getById(id);
+			if(full) 
+				return companyMapper.companyToDto(company);
+			else 
+				return new CompanyDto(companyMapper.companyToDto(company));
+		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-		if(full) return companyMapper.companyToDto(company);
-		return new CompanyDto(companyMapper.companyToDto(company));
+		}		
 	}
 	
 	@PostMapping
 	public CompanyDto addCompany(@RequestBody @Valid CompanyDto companyDto) {
-		if(companyService.getById(companyDto.getCompanyId()) != null) 
-			throw new NonUniqueIdException();
-		companyService.saveCompany(companyMapper.DtoToCompany(companyDto));
-		return companyDto;
+		Company company = companyMapper.DtoToCompany(companyDto);
+		return companyMapper.companyToDto(companyService.saveCompany(company));
 	}
 	
 	@PutMapping("/{id}")
-	public CompanyDto modifyCompany(@PathVariable long companyId, @RequestBody @Valid CompanyDto companyDto) {
-		checkCompanyExist(companyId);
-		companyDto.setCompanyId(companyId);
-		companyService.editCompany(companyId, companyMapper.DtoToCompany(companyDto));
-		return companyDto;
-	}
+	public CompanyDto modifyCompany(@PathVariable long id, @RequestBody @Valid CompanyDto companyDto) {
+		companyDto.setCompanyId(id);
+		Company company = companyMapper.DtoToCompany(companyDto);
+		try {
+			companyService.editCompany(id, company);
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		return companyMapper.companyToDto(company);
+	}		
 	
 	@DeleteMapping("/{id}")
-	public void deleteCompany(@PathVariable long companyId) {
-		checkCompanyExist(companyId);
-		companyService.deleteCompany(companyId);
-	}
-	
+	public void deleteCompany(@PathVariable long id) {
+		try {
+			companyService.deleteCompany(id);
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	}	
+		
 	@PostMapping("/{companyId}/hire")
-	public EmployeeDto hireEmployee(@PathVariable long companyId, @RequestBody @Valid EmployeeDto employeeDto) {
-		checkCompanyExist(companyId);
-		if(companyService.getById(companyId).getEmployees().stream()
-				.anyMatch(e -> e.getEmployeeId() == employeeDto.getEmployeeId()))
-					throw new NonUniqueIdException();
-		companyService.saveEmployee(companyId, employeeMapper.DtoToEmployee(employeeDto));
-		return employeeDto;
+	public CompanyDto hireEmployee(@PathVariable long companyId, @RequestBody @Valid EmployeeDto employeeDto) {
+		Employee employee = employeeMapper.DtoToEmployee(employeeDto);
+		try {
+			return companyMapper.companyToDto(companyService.saveEmployee(companyId, employee));
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}		
 	}
-	
+	/*
 	@DeleteMapping("{companyId}/delete/{employeeId}")
 	public void deleteEmployee(@PathVariable long companyId, @PathVariable long employeeId) {
 		checkCompanyExist(companyId);
@@ -106,10 +115,7 @@ public class CompanyController {
 		checkCompanyExist(companyId);
 		companyService.changeEmployeeList(companyId, employeeMapper.DtosToEmployee(employees));
 		return employees;
-	}
+	}*/
 	
-	private void checkCompanyExist(long companyId) {
-		if(companyService.getById(companyId) == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-	}
 
 }

@@ -1,6 +1,7 @@
 package hu.webuni.hr.gyd.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import hu.webuni.hr.gyd.model.Employee;
 
@@ -10,7 +11,7 @@ public interface EmployeeService {
 	
 	public List<Employee> getAll();
 	
-	public Employee getById(long id);
+	public Optional<Employee> getById(long id);
 	
 	public Employee saveEmployee(Employee employee);
 	
