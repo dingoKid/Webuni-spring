@@ -2,7 +2,6 @@ package hu.webuni.hr.gyd.web;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -42,22 +41,15 @@ public class CompanyController {
 	
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
-		if(!full) {
-			return companyMapper.companiesToDtos(companyService.getAll()).stream()
-					.map(c -> new CompanyDto(c))
-					.collect(Collectors.toList());
-		}
-		return companyMapper.companiesToDtos(companyService.getAll());
+		List<Company> companies = companyService.getAll();
+		return full ? companyMapper.companiesToDtos(companies) : companyMapper.companiesWOEmployeesToDtos(companies);
 	}
 	
 	@GetMapping("/{id}")
 	public CompanyDto getById(@RequestParam(required = false, defaultValue = "false") boolean full, @PathVariable long id) {
 		try {
 			Company company = companyService.getById(id);
-			if(full) 
-				return companyMapper.companyToDto(company);
-			else 
-				return new CompanyDto(companyMapper.companyToDto(company));
+			return full ? companyMapper.companyToDto(company) : companyMapper.companyWOEmployeesToDto(company);
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}		
@@ -94,28 +86,29 @@ public class CompanyController {
 	public CompanyDto hireEmployee(@PathVariable long companyId, @RequestBody @Valid EmployeeDto employeeDto) {
 		Employee employee = employeeMapper.DtoToEmployee(employeeDto);
 		try {
-			return companyMapper.companyToDto(companyService.saveEmployee(companyId, employee));
+			return companyMapper.companyToDto(companyService.addEmployee(companyId, employee));
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}		
 	}
-	/*
+	
 	@DeleteMapping("{companyId}/delete/{employeeId}")
 	public void deleteEmployee(@PathVariable long companyId, @PathVariable long employeeId) {
-		checkCompanyExist(companyId);
-		if(companyService.getCompanies().get(companyId).getEmployees().stream()
-				.anyMatch(e -> e.getEmployeeId() == employeeId))
-					companyService.deleteEmployee(companyId, employeeId);
-		else 
+		try {
+			companyService.deleteEmployee(companyId, employeeId);			
+		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@PutMapping("/{companyId}/swapteam")
-	public List<EmployeeDto> swapEmployees(@PathVariable long companyId, @RequestBody List<EmployeeDto> employees) {
-		checkCompanyExist(companyId);
-		companyService.changeEmployeeList(companyId, employeeMapper.DtosToEmployee(employees));
-		return employees;
-	}*/
+	public CompanyDto swapEmployees(@PathVariable long companyId, @RequestBody List<EmployeeDto> employees) {
+		try {
+			return companyMapper.companyToDto(companyService.changeEmployeeList(companyId, employeeMapper.DtosToEmployee(employees)));
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	}
 	
 
 }

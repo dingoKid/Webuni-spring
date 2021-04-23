@@ -53,26 +53,34 @@ public class CompanyService {
 	}
 	
 	@Transactional
-	public Company saveEmployee(long companyId, Employee employee) {
+	public Company addEmployee(long companyId, Employee employee) {
 		Company company = companyRepository.findById(companyId).orElseThrow(() -> new NoSuchElementException());
-		company.getEmployees().add(employee);
+		company.addEmployee(employee);
 		employeeRepository.save(employee);
-		System.out.println(employee);
-		System.out.println(company);
-		return companyRepository.save(company);
-	}
-	/*
-	@Transactional
-	public void deleteEmployee(long companyId, long employeeId) {
-		Employee employee = companies.get(companyId).getEmployees().stream().filter(e -> e.getEmployeeId() == employeeId).findFirst().get();
-		companies.get(companyId).getEmployees().remove(employee);
+		return company;
 	}
 	
 	@Transactional
-	public List<Employee> changeEmployeeList(long companyId, List<Employee> employees) {
-		companies.get(companyId).setEmployees(employees);
-		return employees;
+	public void deleteEmployee(long companyId, long employeeId) {
+		Employee employee = employeeRepository.findById(employeeId).get();
+		Company company = companyRepository.findById(companyId).get();
+		company.deleteEmployee(employee);
+		employeeRepository.save(employee);
 	}
-		*/
+	
+	@Transactional
+	public Company changeEmployeeList(long companyId, List<Employee> employees) {
+		Company company = companyRepository.findById(companyId).get();
+		company.clearEmployeeList();
+		
+		for(Employee employee : employees) {
+			company.addEmployee(employee);
+			employeeRepository.save(employee);
+		}
+		return company;
+	}
+		
+		
+	
 	
 }

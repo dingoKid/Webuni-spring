@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 
-public abstract class EmployeeServices implements EmployeeService {
+public abstract class AbstractEmployeeService implements EmployeeService {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;

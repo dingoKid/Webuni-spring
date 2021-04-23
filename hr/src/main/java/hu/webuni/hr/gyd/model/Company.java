@@ -65,12 +65,32 @@ public class Company {
 		this.employees = employees;
 	}
 
+	public void addEmployee(Employee employee) {
+		if(employees == null) 
+			this.employees = new ArrayList<Employee>();
+		this.employees.add(employee);
+		employee.setCompany(this);			
+	}
+	
+	public void deleteEmployee(Employee employee) {
+		this.employees.remove(employee);
+		employee.setCompany(null);
+		
+	}
+	
+	public void clearEmployeeList() {
+		for(Employee employee : this.employees) {
+			employee.setCompany(null);
+		}
+		this.getEmployees().clear();
+	}
+	
 	@Override
 	public String toString() {
 		return "CompanyDto [companyId=" + companyId + ", tradeRegisterNumber=" + tradeRegisterNumber + ", name=" + name
 				+ ", address=" + address + ", employees=" + employees + "]";
 	}
 
-	
+
 	
 }

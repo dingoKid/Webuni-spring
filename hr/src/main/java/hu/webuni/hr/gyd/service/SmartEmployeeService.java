@@ -13,7 +13,7 @@ import hu.webuni.hr.gyd.configuration.HrConfigPropertiesWithLists;
 import hu.webuni.hr.gyd.model.Employee;
 
 @Service
-public class SmartEmployeeService extends EmployeeServices {
+public class SmartEmployeeService extends AbstractEmployeeService {
 		
 	@Autowired
 	HrConfigPropertiesWithLists config;

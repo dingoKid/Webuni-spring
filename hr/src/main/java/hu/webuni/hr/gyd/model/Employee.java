@@ -86,7 +86,4 @@ public class Employee {
 				+ ", hiringDate=" + hiringDate + ", company=" + company + "]";
 	}
 
-		
-	
-	
 }
