@@ -2,6 +2,7 @@ package hu.webuni.hr.gyd.web;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -24,6 +25,7 @@ import hu.webuni.hr.gyd.mapper.CompanyMapper;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.service.CompanyService;
 
 @RestController
@@ -38,6 +40,9 @@ public class CompanyController {
 	
 	@Autowired
 	EmployeeMapper employeeMapper;
+	
+	@Autowired
+	CompanyRepository companyRepository;
 	
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
@@ -109,6 +114,22 @@ public class CompanyController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	@GetMapping("/salaryover")
+	public List<CompanyDto> getBySalary(@RequestParam int salary) {
+		return companyMapper.companiesToDtos(companyRepository.findBySalary(salary));
+	}
+	
+	@GetMapping("employeesover")
+	public List<CompanyDto> getByEmployeeNumber(@RequestParam int number) {
+		List<Company> companies = companyRepository.findAll().stream()
+			.filter(c -> c.getEmployees().size() > number)
+			.collect(Collectors.toList());
+		return companyMapper.companiesToDtos(companies);
+	}
+	
+	
+	
 	
 
 }

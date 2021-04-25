@@ -23,6 +23,8 @@ import org.springframework.web.server.ResponseStatusException;
 import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.PositionSalaries;
+import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.service.EmployeeService;
 
@@ -38,6 +40,9 @@ public class EmployeeController {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	CompanyRepository companyRepository;
 
 	@GetMapping
 	public List<EmployeeDto> getAllEmployees() {
@@ -99,6 +104,14 @@ public class EmployeeController {
 	@GetMapping(params = {"start", "end"})
 	public List<EmployeeDto> getByDates(@RequestParam LocalDateTime start, LocalDateTime end) {
 		return mapper.employeesToDtos(employeeRepository.findByHiringDateBetween(start, end));
+	}
+	
+	@GetMapping("/average/{companyId}")
+	public List<PositionSalaries> getSalariesById(@PathVariable long companyId) {
+		if(companyRepository.existsById(companyId))
+			return employeeRepository.findSalariesById(companyId);
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 
 }
