@@ -20,17 +20,19 @@ public class Company {
 	private long tradeRegisterNumber;
 	private String name;
 	private String address;
+	private CompanyType companyType;	
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
 	private List<Employee> employees;
 	
 	public Company() { }
 			
-	public Company(long companyId, long tradeRegisterNumber, String name, String address) {
+	public Company(long companyId, long tradeRegisterNumber, String name, String address, CompanyType companyType) {
 		this.companyId = companyId;
 		this.tradeRegisterNumber = tradeRegisterNumber;
 		this.name = name;
 		this.address = address;
+		this.companyType = companyType;
 		employees = new ArrayList<>();
 	}
 	
@@ -65,6 +67,14 @@ public class Company {
 	}
 	public void setEmployees(List<Employee> employees) {
 		this.employees = employees;
+	}
+	
+	public CompanyType getCompanyType() {
+		return companyType;
+	}
+
+	public void setCompanyType(CompanyType companyType) {
+		this.companyType = companyType;
 	}
 
 	public void addEmployee(Employee employee) {

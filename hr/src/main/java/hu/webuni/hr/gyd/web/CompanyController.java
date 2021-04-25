@@ -120,7 +120,7 @@ public class CompanyController {
 		return companyMapper.companiesToDtos(companyRepository.findBySalary(salary));
 	}
 	
-	@GetMapping("employeesover")
+	@GetMapping("/employeesover")
 	public List<CompanyDto> getByEmployeeNumber(@RequestParam int number) {
 		List<Company> companies = companyRepository.findAll().stream()
 			.filter(c -> c.getEmployees().size() > number)

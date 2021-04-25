@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
+import hu.webuni.hr.gyd.dto.PositionSalaryDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Employee;
-import hu.webuni.hr.gyd.model.PositionSalaries;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.service.EmployeeService;
@@ -107,7 +107,7 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/average/{companyId}")
-	public List<PositionSalaries> getSalariesById(@PathVariable long companyId) {
+	public List<PositionSalaryDto> getSalariesById(@PathVariable long companyId) {
 		if(companyRepository.existsById(companyId))
 			return employeeRepository.findSalariesById(companyId);
 		else

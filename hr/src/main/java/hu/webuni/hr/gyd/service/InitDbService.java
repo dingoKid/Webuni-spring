@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.model.Company;
+import hu.webuni.hr.gyd.model.CompanyType;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
@@ -26,10 +27,10 @@ public class InitDbService {
 	}
 	
 	public void insertTestData() {
-		Company c1 = new Company(1L, 12345, "IBM", "Pecs, Pecsi utca");
-		Company c2 = new Company(2L, 34567, "HP", "Szeged, Szegedi utca");
-		Company c3 = new Company(3L, 56789, "Microsoft", "Szekszard, Szexardi utca");
-		Company c4 = new Company(4L, 45678, "Sun", "Gyor, Gyori utca");
+		Company c1 = new Company(1L, 12345, "IBM", "Pecs, Pecsi utca", CompanyType.BT);
+		Company c2 = new Company(2L, 34567, "HP", "Szeged, Szegedi utca", CompanyType.KFT);
+		Company c3 = new Company(3L, 56789, "Microsoft", "Szekszard, Szexardi utca", CompanyType.ZRT);
+		Company c4 = new Company(4L, 45678, "Sun", "Gyor, Gyori utca", CompanyType.NYRT);
 		
 		companyRepository.saveAll(List.of(c1, c2, c3, c4));
 		

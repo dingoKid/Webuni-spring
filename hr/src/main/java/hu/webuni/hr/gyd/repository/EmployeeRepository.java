@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import hu.webuni.hr.gyd.dto.PositionSalaryDto;
 import hu.webuni.hr.gyd.model.Employee;
-import hu.webuni.hr.gyd.model.PositionSalaries;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
@@ -18,12 +18,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 	
-	//@Query("select e from Employee e where e.hiringDate between ?1 and ?2")
 	List<Employee> findByHiringDateBetween(LocalDateTime start, LocalDateTime end);
 	
-	//select position, AVG(salary) from employee where employee.company_company_id = 3 group by position order by avg(salary) desc;
-	@Query("select e.position as :position, avg(e.salary) as :averageSalary from Employee e where e.company.id = ?1 group by e.position order by avg(e.salary) desc")
-	List<PositionSalaries> findSalariesById(long id);
+	@Query("select e.position as position, avg(e.salary) as averageSalary from Employee e where e.company.id = ?1 group by e.position order by avg(e.salary) desc")
+	List<PositionSalaryDto> findSalariesById(long id);
 	
 	
 }
