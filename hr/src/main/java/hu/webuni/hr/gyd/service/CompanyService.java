@@ -6,11 +6,13 @@ import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
+import hu.webuni.hr.gyd.repository.CompanyTypeRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 
 @Service
@@ -22,24 +24,31 @@ public class CompanyService {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
+	@Autowired
+	CompanyTypeRepository companyTypeRepository;
+	
 	public List<Company> getAll() {
-		return companyRepository.findAll();
+		return companyRepository.findAll(Sort.by("name"));
 	}
 	
-	public Company getById(long id) {		
+	public Company getById(long id) {
 		Company company = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
 		return company;
 	}
 	
 	@Transactional
 	public Company saveCompany(Company company) {
+		var companyType = companyTypeRepository.findByName(company.getCompanyType().getName());
+		if(companyType == null)
+			throw new NoSuchElementException();
+		company.setCompanyType(companyType);
 		return companyRepository.save(company);
 	}
 	
 	@Transactional
 	public Company editCompany(long id, Company company) {
 		if(companyRepository.existsById(id))
-			return companyRepository.save(company);
+			return saveCompany(company);
 		else
 			throw new NoSuchElementException();
 	}

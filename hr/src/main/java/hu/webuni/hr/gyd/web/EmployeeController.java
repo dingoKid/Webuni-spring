@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -92,8 +94,16 @@ public class EmployeeController {
 	}
 	
 	@GetMapping(params = "position")
-	public List<EmployeeDto> getByPosition(@RequestParam String position) {
-		return mapper.employeesToDtos(employeeRepository.findByPosition(position));
+	public List<EmployeeDto> getByPosition(@RequestParam String position) {		
+		Page<Employee> pageResult = employeeRepository.findByPosition(position, PageRequest.of(0, 4));
+		System.out.println();
+		System.out.println(pageResult.getNumber());
+		System.out.println(pageResult.getNumberOfElements());
+		System.out.println(pageResult.getSize());
+		System.out.println(pageResult.getTotalElements());
+		System.out.println(pageResult.getTotalPages());
+		System.out.println(pageResult.getPageable());
+		return mapper.employeesToDtos(pageResult.toList());
 	}
 	
 	@GetMapping(params = "name")

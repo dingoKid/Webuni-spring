@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -15,12 +16,14 @@ public class Company {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long companyId;
+	private Long companyId;
 	
 	private long tradeRegisterNumber;
 	private String name;
 	private String address;
-	private CompanyType companyType;	
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	private CompanyType companyType;
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
 	private List<Employee> employees;

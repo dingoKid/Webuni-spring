@@ -18,15 +18,18 @@ public class CompanyDto {
 		
 	@NotEmpty
 	private String address;
+	private String companyType;
+	
 	private List<EmployeeDto> employees;
 	
 	public CompanyDto() {}
 			
-	public CompanyDto(long companyId, long tradeRegisterNumber, String name, String address) {
+	public CompanyDto(long companyId, long tradeRegisterNumber, String name, String companyType, String address) {
 		this.companyId = companyId;
 		this.tradeRegisterNumber = tradeRegisterNumber;
 		this.name = name;
 		this.address = address;
+		this.companyType = companyType;
 		employees = new ArrayList<>();
 	}
 	
@@ -61,6 +64,14 @@ public class CompanyDto {
 	}
 	public void setEmployees(List<EmployeeDto> employees) {
 		this.employees = employees;
+	}
+	
+	public String getCompanyType() {
+		return companyType;
+	}
+
+	public void setCompanyType(String companyType) {
+		this.companyType = companyType;
 	}
 
 	@Override

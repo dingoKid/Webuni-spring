@@ -9,13 +9,16 @@ import org.mapstruct.Named;
 
 import hu.webuni.hr.gyd.dto.CompanyDto;
 import hu.webuni.hr.gyd.model.Company;
+import hu.webuni.hr.gyd.model.CompanyType;
 
 @Mapper(componentModel = "spring")
 public interface CompanyMapper {
 	
+	@Mapping(target = "companyType", source = "companyType.name")
 	CompanyDto companyToDto(Company company);
 	
 	@Mapping(target = "employees", ignore = true)
+	@Mapping(target = "companyType", source = "companyType.name")
 	@Named("noEmployees")
 	CompanyDto companyWOEmployeesToDto(Company company);
 	
@@ -24,6 +27,12 @@ public interface CompanyMapper {
 	@IterableMapping(qualifiedByName = "noEmployees")
 	List<CompanyDto> companiesWOEmployeesToDtos(List<Company> companies);
 	
+	@Named("stringToCompanyType")
+	public static CompanyType stringToCompanyType(String type) {
+		return new CompanyType(1L, type);
+	}
+	
+	@Mapping(source = "companyType", target = "companyType", qualifiedByName = "stringToCompanyType")
 	Company DtoToCompany(CompanyDto companyDto);
 
 }

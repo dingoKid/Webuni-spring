@@ -14,6 +14,4 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	@Query("select distinct c from Company c join Employee e on c.companyId = e.company.id where e.salary > ?1 order by c.companyId")
 	List<Company> findBySalary(int salary);
 	
-	
-		
 }

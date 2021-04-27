@@ -10,6 +10,7 @@ import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.CompanyType;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
+import hu.webuni.hr.gyd.repository.CompanyTypeRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 
 @Service
@@ -21,16 +22,27 @@ public class InitDbService {
 	@Autowired
 	EmployeeRepository employeeRepository;
 	
+	@Autowired
+	CompanyTypeRepository companyTypeRepository;
+	
 	public void clearDB() {
 		employeeRepository.deleteAll();
 		companyRepository.deleteAll();
 	}
 	
 	public void insertTestData() {
-		Company c1 = new Company(1L, 12345, "IBM", "Pecs, Pecsi utca", CompanyType.BT);
-		Company c2 = new Company(2L, 34567, "HP", "Szeged, Szegedi utca", CompanyType.KFT);
-		Company c3 = new Company(3L, 56789, "Microsoft", "Szekszard, Szexardi utca", CompanyType.ZRT);
-		Company c4 = new Company(4L, 45678, "Sun", "Gyor, Gyori utca", CompanyType.NYRT);
+		
+		CompanyType ct1 = new CompanyType(1L, "BT");
+		CompanyType ct2 = new CompanyType(2L, "KFT");
+		CompanyType ct3 = new CompanyType(3L, "ZRT");
+		CompanyType ct4 = new CompanyType(4L, "NYRT");
+		
+		companyTypeRepository.saveAll(List.of(ct1, ct2, ct3, ct4));
+		
+		Company c1 = new Company(1L, 12345, "IBM", "Pecs, Pecsi utca", ct1);
+		Company c2 = new Company(2L, 34567, "HP", "Szeged, Szegedi utca", ct2);
+		Company c3 = new Company(3L, 56789, "Microsoft", "Szekszard, Szexardi utca", ct3);
+		Company c4 = new Company(4L, 45678, "Sun", "Gyor, Gyori utca", ct4);
 		
 		companyRepository.saveAll(List.of(c1, c2, c3, c4));
 		
@@ -48,5 +60,7 @@ public class InitDbService {
 		Employee e12 = new Employee(12L, "Zoltan Gabor", "Driver", 350000, LocalDateTime.of(2015, 2, 10, 0, 0), c3);
 		
 		employeeRepository.saveAll(List.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12));
+		
+		
 	}
 }

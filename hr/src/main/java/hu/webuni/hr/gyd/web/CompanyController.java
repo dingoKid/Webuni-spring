@@ -63,7 +63,11 @@ public class CompanyController {
 	@PostMapping
 	public CompanyDto addCompany(@RequestBody @Valid CompanyDto companyDto) {
 		Company company = companyMapper.DtoToCompany(companyDto);
-		return companyMapper.companyToDto(companyService.saveCompany(company));
+		try {
+			return companyMapper.companyToDto(companyService.saveCompany(company));
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@PutMapping("/{id}")
