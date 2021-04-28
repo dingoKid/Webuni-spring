@@ -11,12 +11,13 @@ import org.springframework.stereotype.Repository;
 
 import hu.webuni.hr.gyd.dto.PositionSalaryDto;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.Position;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 	//@Query("select e from Employee e where e.position = ?1")
-	Page<Employee> findByPosition(String position, Pageable pageable);
+	Page<Employee> findByPosition(Position position, Pageable pageable);
 	
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 	
@@ -24,6 +25,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	
 	@Query("select e.position as position, avg(e.salary) as averageSalary from Employee e where e.company.id = ?1 group by e.position order by avg(e.salary) desc")
 	List<PositionSalaryDto> findSalariesById(long id);
-	
 	
 }

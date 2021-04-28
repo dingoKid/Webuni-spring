@@ -1,6 +1,7 @@
 package hu.webuni.hr.gyd.web;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -26,8 +27,10 @@ import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.dto.PositionSalaryDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
+import hu.webuni.hr.gyd.repository.PositionRepository;
 import hu.webuni.hr.gyd.service.EmployeeService;
 
 @RestController
@@ -45,6 +48,9 @@ public class EmployeeController {
 	
 	@Autowired
 	CompanyRepository companyRepository;
+	
+	@Autowired
+	PositionRepository positionRepository;
 
 	@GetMapping
 	public List<EmployeeDto> getAllEmployees() {
@@ -66,6 +72,8 @@ public class EmployeeController {
 	@PostMapping
 	public EmployeeDto addEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
 		Employee employee = mapper.DtoToEmployee(employeeDto);
+		Position position = positionRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		employee.setPosition(position);
 		employeeService.saveEmployee(employee);
 		return mapper.employeeToDto(employee);
 	}
@@ -74,6 +82,8 @@ public class EmployeeController {
 	public EmployeeDto modifyEmployee(@PathVariable long id, @RequestBody @Valid EmployeeDto employeeDto) {
 		employeeDto.setEmployeeId(id);
 		Employee employee = mapper.DtoToEmployee(employeeDto);
+		Position position = positionRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		employee.setPosition(position);
 		
 		try {			
 			employeeService.editEmployee(id, employee);
@@ -94,8 +104,9 @@ public class EmployeeController {
 	}
 	
 	@GetMapping(params = "position")
-	public List<EmployeeDto> getByPosition(@RequestParam String position) {		
-		Page<Employee> pageResult = employeeRepository.findByPosition(position, PageRequest.of(0, 4));
+	public List<EmployeeDto> getByPosition(@RequestParam String position) {	
+		Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		Page<Employee> pageResult = employeeRepository.findByPosition(pos, PageRequest.of(0, 4));
 		System.out.println();
 		System.out.println(pageResult.getNumber());
 		System.out.println(pageResult.getNumberOfElements());
@@ -122,6 +133,23 @@ public class EmployeeController {
 			return employeeRepository.findSalariesById(companyId);
 		else
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	}
+	
+	@GetMapping(path = "/raisesalary/{position}", params = "newsalary")
+	public List<EmployeeDto> raisePositionSalary(@PathVariable String position, @RequestParam int newsalary) {
+		Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		pos.setMinSalary(newsalary);
+		positionRepository.save(pos);		
+		List<Employee> employees = employeeRepository.findByPosition(pos, null).toList();
+		List<Employee> modifiedEmployees = new ArrayList<>();
+		for (Employee employee : employees) {
+			if(employee.getSalary() < newsalary) {
+				employee.setSalary(newsalary);
+				employeeRepository.save(employee);
+				modifiedEmployees.add(employee);
+			}
+		}
+		return mapper.employeesToDtos(modifiedEmployees);
 	}
 
 }

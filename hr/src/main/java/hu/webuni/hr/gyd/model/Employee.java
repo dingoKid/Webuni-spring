@@ -3,6 +3,7 @@ package hu.webuni.hr.gyd.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +16,10 @@ public class Employee {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long EmployeeId;
 	private String name;
-	private String position;
+	
+	@ManyToOne//(fetch = FetchType.LAZY)
+	private Position position;
+	
 	private int salary;
 	private LocalDateTime hiringDate;
 	
@@ -24,7 +28,7 @@ public class Employee {
 	
 	public Employee() {}
 	
-	public Employee(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate, Company company) {
+	public Employee(Long employeeId, String name, Position position, int salary, LocalDateTime hiringDate, Company company) {
 		EmployeeId = employeeId;
 		this.name = name;
 		this.position = position;
@@ -49,11 +53,11 @@ public class Employee {
 		this.name = name;
 	}
 
-	public String getPosition() {
+	public Position getPosition() {
 		return position;
 	}
 
-	public void setPosition(String position) {
+	public void setPosition(Position position) {
 		this.position = position;
 	}
 

@@ -11,7 +11,7 @@ import hu.webuni.hr.gyd.dto.CompanyDto;
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.CompanyType;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = EmployeeMapper.class)
 public interface CompanyMapper {
 	
 	@Mapping(target = "companyType", source = "companyType.name")

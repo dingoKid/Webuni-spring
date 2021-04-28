@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.Position;
 
 @Controller
 public class HrTLController {
@@ -18,10 +19,10 @@ public class HrTLController {
 	Map<Long, Employee> employees = new HashMap<>();
 		
 	{
-			employees.put(1L, new Employee(1L, "Gyetvai Denes", "worker", 300000, LocalDateTime.of(2015, 3, 1, 0, 0), new Company()));
-			employees.put(2L, new Employee(2L, "Kovács János", "manager", 400000, LocalDateTime.of(2013, 7, 11, 0, 0), new Company()));
-			employees.put(3L, new Employee(3L, "Kiss Béla", "assistant", 200000, LocalDateTime.of(2008, 1, 11, 0, 0), new Company()));
-			employees.put(4L, new Employee(4L, "Nagy Péter", "other", 150000, LocalDateTime.of(2020, 11, 11, 0, 0), new Company()));
+			employees.put(1L, new Employee(1L, "Gyetvai Denes", new Position(), 300000, LocalDateTime.of(2015, 3, 1, 0, 0), new Company()));
+			employees.put(2L, new Employee(2L, "Kovács János", new Position(), 400000, LocalDateTime.of(2013, 7, 11, 0, 0), new Company()));
+			employees.put(3L, new Employee(3L, "Kiss Béla", new Position(), 200000, LocalDateTime.of(2008, 1, 11, 0, 0), new Company()));
+			employees.put(4L, new Employee(4L, "Nagy Péter", new Position(), 150000, LocalDateTime.of(2020, 11, 11, 0, 0), new Company()));
 	}
 	
 	@GetMapping("/")
