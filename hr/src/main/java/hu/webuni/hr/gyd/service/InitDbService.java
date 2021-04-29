@@ -44,10 +44,10 @@ public class InitDbService {
 	@Transactional
 	public void insertTestData() {
 		
-		Position p1 = new Position(1L, "Driver", Requirement.NINCS, 100000);
-		Position p2 = new Position(2L, "Manager", Requirement.FOISKOLA, 300000);
-		Position p3 = new Position(3L, "Assistant", Requirement.ERETTSEGI, 250000);
-		Position p4 = new Position(4L, "Teamleader", Requirement.EGYETEM, 400000);
+		Position p1 = new Position(1L, "Driver", Requirement.NINCS);
+		Position p2 = new Position(2L, "Manager", Requirement.FOISKOLA);
+		Position p3 = new Position(3L, "Assistant", Requirement.ERETTSEGI);
+		Position p4 = new Position(4L, "Teamleader", Requirement.EGYETEM);
 		
 		positionRepository.saveAll(List.of(p1, p2, p3, p4));
 		
@@ -59,7 +59,8 @@ public class InitDbService {
 		companyTypeRepository.saveAll(List.of(ct1, ct2, ct3, ct4));
 		
 		Company c1 = new Company(1L, 12345, "IBM", "Pecs, Pecsi utca", ct1);
-		c1.setPosition(new Position(5L, "Driver", Requirement.NINCS, 200000));
+		p1.setMinSalary(250000);
+		p1.setCompany(c1);
 		Company c2 = new Company(2L, 34567, "HP", "Szeged, Szegedi utca", ct2);
 		Company c3 = new Company(3L, 56789, "Microsoft", "Szekszard, Szexardi utca", ct3);
 		Company c4 = new Company(4L, 45678, "Sun", "Gyor, Gyori utca", ct4);

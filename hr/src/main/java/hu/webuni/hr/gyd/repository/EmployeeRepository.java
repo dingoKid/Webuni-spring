@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
 
@@ -20,6 +21,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 	
 	List<Employee> findByHiringDateBetween(LocalDateTime start, LocalDateTime end);
+	
+	List<Employee> findByCompanyAndPosition(Company company, Position position); 
 	
 	
 	

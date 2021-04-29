@@ -1,7 +1,6 @@
 package hu.webuni.hr.gyd.web;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -31,6 +30,7 @@ import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.repository.PositionRepository;
 import hu.webuni.hr.gyd.service.EmployeeService;
+import hu.webuni.hr.gyd.service.SalaryService;
 
 @RestController
 @RequestMapping("api/employees")
@@ -50,6 +50,9 @@ public class EmployeeController {
 	
 	@Autowired
 	PositionRepository positionRepository;
+	
+	@Autowired
+	SalaryService salaryService;
 
 	@GetMapping
 	public List<EmployeeDto> getAllEmployees() {
@@ -126,21 +129,13 @@ public class EmployeeController {
 		return mapper.employeesToDtos(employeeRepository.findByHiringDateBetween(start, end));
 	}		
 	
-	@GetMapping(path = "/raisesalary/{position}", params = "newsalary")
-	public List<EmployeeDto> raisePositionSalary(@PathVariable String position, @RequestParam int newsalary) {
-		Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		pos.setMinSalary(newsalary);
-		positionRepository.save(pos);		
-		List<Employee> employees = employeeRepository.findByPosition(pos, null).toList();
-		List<Employee> modifiedEmployees = new ArrayList<>();
-		for (Employee employee : employees) {
-			if(employee.getSalary() < newsalary) {
-				employee.setSalary(newsalary);
-				employeeRepository.save(employee);
-				modifiedEmployees.add(employee);
-			}
+	@GetMapping(path = "/raisesalary/{companyId}/{position}", params = "newsalary")
+	public List<EmployeeDto> raisePositionSalary(@PathVariable long companyId, @PathVariable String position, @RequestParam int newsalary) {
+		try {
+			return mapper.employeesToDtos(salaryService.raisePositionSalary(position, newsalary, companyId));
+		} catch(NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		return mapper.employeesToDtos(modifiedEmployees);
 	}
 
 }

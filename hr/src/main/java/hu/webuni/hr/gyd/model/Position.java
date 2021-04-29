@@ -14,17 +14,24 @@ public class Position {
 	
 	private String name;
 	private Requirement minRequirement;
-	private int minSalary;
 	
 	@OneToOne
 	private Company company;
-	
+	private int minSalary;
+		
 	public Position() {}
 	
-	public Position(Long id, String name, Requirement minRequirement, int minSalary) {
+	public Position(Long id, String name, Requirement minRequirement) {
 		this.id = id;
 		this.name = name;
 		this.minRequirement = minRequirement;
+	}
+	
+	public int getMinSalary() {
+		return minSalary;
+	}
+
+	public void setMinSalary(int minSalary) {
 		this.minSalary = minSalary;
 	}
 
@@ -52,13 +59,6 @@ public class Position {
 		this.minRequirement = minRequirement;
 	}
 
-	public int getMinSalary() {
-		return minSalary;
-	}
-
-	public void setMinSalary(int minSalary) {
-		this.minSalary = minSalary;
-	}
 	
 	public Company getCompany() {
 		return company;
@@ -68,10 +68,11 @@ public class Position {
 		this.company = company;
 	}
 
+	
 	@Override
 	public String toString() {
-		return "Position [id=" + id + ", name=" + name + ", minRequirement=" + minRequirement + ", minSalary="
-				+ minSalary + "]";
+		return "Position [id=" + id + ", name=" + name + ", minRequirement=" + minRequirement + ", company=" + company
+				+ "]";
 	}
 
 	@Override
