@@ -10,7 +10,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
-import hu.webuni.hr.gyd.dto.PositionSalaryDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
@@ -104,9 +103,9 @@ public class EmployeeController {
 	}
 	
 	@GetMapping(params = "position")
-	public List<EmployeeDto> getByPosition(@RequestParam String position) {	
+	public List<EmployeeDto> getByPosition(@RequestParam String position, Pageable page) {	
 		Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		Page<Employee> pageResult = employeeRepository.findByPosition(pos, PageRequest.of(0, 4));
+		Page<Employee> pageResult = employeeRepository.findByPosition(pos, page);
 		System.out.println();
 		System.out.println(pageResult.getNumber());
 		System.out.println(pageResult.getNumberOfElements());
@@ -125,15 +124,7 @@ public class EmployeeController {
 	@GetMapping(params = {"start", "end"})
 	public List<EmployeeDto> getByDates(@RequestParam LocalDateTime start, LocalDateTime end) {
 		return mapper.employeesToDtos(employeeRepository.findByHiringDateBetween(start, end));
-	}
-	
-	@GetMapping("/average/{companyId}")
-	public List<PositionSalaryDto> getSalariesById(@PathVariable long companyId) {
-		if(companyRepository.existsById(companyId))
-			return employeeRepository.findSalariesById(companyId);
-		else
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-	}
+	}		
 	
 	@GetMapping(path = "/raisesalary/{position}", params = "newsalary")
 	public List<EmployeeDto> raisePositionSalary(@PathVariable String position, @RequestParam int newsalary) {

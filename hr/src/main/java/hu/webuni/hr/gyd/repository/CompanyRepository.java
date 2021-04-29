@@ -7,11 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import hu.webuni.hr.gyd.model.Company;
+import hu.webuni.hr.gyd.model.PositionSalary;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
-	@Query("select distinct c from Company c join Employee e on c.companyId = e.company.id where e.salary > ?1 order by c.companyId")
+	@Query("select distinct c from Company c join Employee e on c.companyId = e.company.id where e.salary > :salary order by c.companyId")
 	List<Company> findBySalary(int salary);
+	
+	@Query("select e.position.name as position, avg(e.salary) as averageSalary from Employee e where e.company.id = :id group by position order by avg(e.salary) desc")
+	List<PositionSalary> findSalariesById(long id);
 	
 }

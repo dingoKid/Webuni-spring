@@ -25,6 +25,7 @@ import hu.webuni.hr.gyd.mapper.CompanyMapper;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.PositionSalary;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.service.CompanyService;
 
@@ -42,7 +43,7 @@ public class CompanyController {
 	EmployeeMapper employeeMapper;
 	
 	@Autowired
-	CompanyRepository companyRepository;
+	CompanyRepository companyRepository;	
 	
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
@@ -130,6 +131,14 @@ public class CompanyController {
 			.filter(c -> c.getEmployees().size() > number)
 			.collect(Collectors.toList());
 		return companyMapper.companiesToDtos(companies);
+	}
+	
+	@GetMapping("/average/{companyId}")
+	public List<PositionSalary> getSalariesById(@PathVariable long companyId) {
+		if(companyRepository.existsById(companyId))
+			return companyRepository.findSalariesById(companyId);
+		else
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 	
 	

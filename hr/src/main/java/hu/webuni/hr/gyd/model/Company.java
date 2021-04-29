@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Company {
@@ -22,11 +23,14 @@ public class Company {
 	private String name;
 	private String address;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne //(fetch = FetchType.LAZY)
 	private CompanyType companyType;
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
 	private List<Employee> employees;
+	
+	@OneToOne(mappedBy = "company")
+	private Position position;
 	
 	public Company() { }
 			
@@ -37,14 +41,22 @@ public class Company {
 		this.address = address;
 		this.companyType = companyType;
 		employees = new ArrayList<>();
-	}
+	}	
 	
-	public long getCompanyId() {
-		return companyId;
+	public Position getPosition() {
+		return position;
 	}
 
-	public void setCompanyId(long companyId) {
+	public void setPosition(Position position) {
+		this.position = position;
+	}
+
+	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
+	}
+
+	public long getCompanyId() {
+		return companyId;
 	}
 	
 	public long getTradeRegisterNumber() {

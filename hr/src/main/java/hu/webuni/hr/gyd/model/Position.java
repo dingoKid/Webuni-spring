@@ -3,6 +3,7 @@ package hu.webuni.hr.gyd.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Position {
@@ -14,6 +15,9 @@ public class Position {
 	private String name;
 	private Requirement minRequirement;
 	private int minSalary;
+	
+	@OneToOne
+	private Company company;
 	
 	public Position() {}
 	
@@ -54,6 +58,14 @@ public class Position {
 
 	public void setMinSalary(int minSalary) {
 		this.minSalary = minSalary;
+	}
+	
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 
 	@Override
