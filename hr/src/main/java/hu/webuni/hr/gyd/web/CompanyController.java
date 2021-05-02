@@ -2,7 +2,6 @@ package hu.webuni.hr.gyd.web;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -127,10 +126,7 @@ public class CompanyController {
 	
 	@GetMapping("/employeesover")
 	public List<CompanyDto> getByEmployeeNumber(@RequestParam int number) {
-		List<Company> companies = companyRepository.findAll().stream()
-			.filter(c -> c.getEmployees().size() > number)
-			.collect(Collectors.toList());
-		return companyMapper.companiesToDtos(companies);
+		return companyMapper.companiesToDtos(companyRepository.findByEmployeesNumber(number));
 	}
 	
 	@GetMapping("/average/{companyId}")
