@@ -12,6 +12,12 @@ import hu.webuni.hr.gyd.model.PositionSalary;
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
+	@Query("select distinct c from Company c left join fetch c.employees where c.companyId = :id")
+	Company findByIdWithEmployees(long id);
+	
+	@Query("select distinct c from Company c left join fetch c.employees")
+	List<Company> findAllWithEmployees();
+	
 	@Query("select distinct c from Company c join Employee e on c.companyId = e.company.id where e.salary > :salary order by c.companyId")
 	List<Company> findBySalary(int salary);
 	

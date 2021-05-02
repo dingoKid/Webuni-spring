@@ -31,6 +31,18 @@ public class CompanyService {
 		return companyRepository.findAll(Sort.by("name"));
 	}
 	
+	public List<Company> getAllWithEmployees() {
+		return companyRepository.findAllWithEmployees();
+	}
+	
+	public Company getByIdWithEmployees(long id) {
+		Company company = companyRepository.findByIdWithEmployees(id);
+		if(company != null)
+			return company;
+		else
+			throw new NoSuchElementException();
+	}
+	
 	public Company getById(long id) {
 		Company company = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
 		return company;

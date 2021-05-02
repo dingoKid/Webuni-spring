@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +25,7 @@ public class Company {
 	@ManyToOne //(fetch = FetchType.LAZY)
 	private CompanyType companyType;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
+	@OneToMany(mappedBy = "company")
 	private List<Employee> employees;
 	
 	@OneToOne(mappedBy = "company")
@@ -34,8 +33,16 @@ public class Company {
 	
 	public Company() { }
 			
-	public Company(long companyId, long tradeRegisterNumber, String name, String address, CompanyType companyType) {
+	public Company(Long companyId, long tradeRegisterNumber, String name, String address, CompanyType companyType) {
 		this.companyId = companyId;
+		this.tradeRegisterNumber = tradeRegisterNumber;
+		this.name = name;
+		this.address = address;
+		this.companyType = companyType;
+		employees = new ArrayList<>();
+	}	
+	
+	public Company(long tradeRegisterNumber, String name, String address, CompanyType companyType) {
 		this.tradeRegisterNumber = tradeRegisterNumber;
 		this.name = name;
 		this.address = address;
@@ -55,7 +62,7 @@ public class Company {
 		this.companyId = companyId;
 	}
 
-	public long getCompanyId() {
+	public Long getCompanyId() {
 		return companyId;
 	}
 	

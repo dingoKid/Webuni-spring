@@ -46,18 +46,18 @@ public class CompanyController {
 	
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
-		List<Company> companies = companyService.getAll();
+		List<Company> companies = full ? companyService.getAllWithEmployees() : companyService.getAll();
 		return full ? companyMapper.companiesToDtos(companies) : companyMapper.companiesWOEmployeesToDtos(companies);
 	}
 	
 	@GetMapping("/{id}")
 	public CompanyDto getById(@RequestParam(required = false, defaultValue = "false") boolean full, @PathVariable long id) {
 		try {
-			Company company = companyService.getById(id);
+			Company company = full ? companyService.getByIdWithEmployees(id) : companyService.getById(id);
 			return full ? companyMapper.companyToDto(company) : companyMapper.companyWOEmployeesToDto(company);
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}		
+		}
 	}
 	
 	@PostMapping
@@ -91,6 +91,10 @@ public class CompanyController {
 		}
 	}	
 		
+	
+	// ****************************************
+	
+	
 	@PostMapping("/{companyId}/hire")
 	public CompanyDto hireEmployee(@PathVariable long companyId, @RequestBody @Valid EmployeeDto employeeDto) {
 		Employee employee = employeeMapper.DtoToEmployee(employeeDto);
@@ -118,6 +122,8 @@ public class CompanyController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	// ****************************************
 	
 	@GetMapping("/salaryover")
 	public List<CompanyDto> getBySalary(@RequestParam int salary) {

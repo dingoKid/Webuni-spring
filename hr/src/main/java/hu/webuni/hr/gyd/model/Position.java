@@ -27,6 +27,11 @@ public class Position {
 		this.minRequirement = minRequirement;
 	}
 	
+	public Position(String name, Requirement minRequirement) {
+		this.name = name;
+		this.minRequirement = minRequirement;
+	}
+	
 	public int getMinSalary() {
 		return minSalary;
 	}

@@ -13,7 +13,7 @@ public class Employee {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long EmployeeId;
+	private Long employeeId;
 	private String name;
 	
 	@ManyToOne//(fetch = FetchType.LAZY)
@@ -28,7 +28,15 @@ public class Employee {
 	public Employee() {}
 	
 	public Employee(Long employeeId, String name, Position position, int salary, LocalDateTime hiringDate, Company company) {
-		EmployeeId = employeeId;
+		this.employeeId = employeeId;
+		this.name = name;
+		this.position = position;
+		this.salary = salary;
+		this.hiringDate = hiringDate;
+		this.company = company;
+	}
+	
+	public Employee(String name, Position position, int salary, LocalDateTime hiringDate, Company company) {
 		this.name = name;
 		this.position = position;
 		this.salary = salary;
@@ -37,11 +45,11 @@ public class Employee {
 	}
 
 	public Long getEmployeeId() {
-		return EmployeeId;
+		return employeeId;
 	}
 
 	public void setEmployeeId(Long employeeId) {
-		EmployeeId = employeeId;
+		this.employeeId = employeeId;
 	}
 
 	public String getName() {
@@ -86,7 +94,7 @@ public class Employee {
 
 	@Override
 	public String toString() {
-		return "Employee [EmployeeId=" + EmployeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
+		return "Employee [EmployeeId=" + employeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
 				+ ", hiringDate=" + hiringDate + ", company=" + company + "]";
 	}
 
