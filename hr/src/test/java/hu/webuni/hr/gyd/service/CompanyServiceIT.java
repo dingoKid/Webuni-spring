@@ -3,7 +3,6 @@ package hu.webuni.hr.gyd.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.CompanyType;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
-import hu.webuni.hr.gyd.model.Requirement;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.CompanyTypeRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
@@ -74,11 +72,16 @@ public class CompanyServiceIT {
 		Position position = positionRepository.findByName("Driver").get();
 		Employee employeeToBeAdded = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);		
 		Company companyAfter = companyService.addEmployee(companyBefore.getCompanyId(), employeeToBeAdded);		
+		assertThat(companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().size()).isEqualTo(1);
+		
 		Employee employeeInCompanyList = companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().get(0);
 		companyService.deleteEmployee(companyAfter.getCompanyId(), employeeInCompanyList.getEmployeeId());
 		
 		assertThat(companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees()).doesNotContain(employeeInCompanyList);
-		assertThat(employeeInCompanyList.getCompany().getCompanyId()).isNull();
-			
+		assertThat(companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().size()).isEqualTo(0);
+		
+		Long idInDatabase = employeeInCompanyList.getEmployeeId();
+		Employee deletedEmployee = employeeRepository.findById(idInDatabase).get();
+		assertThat(deletedEmployee.getCompany()).isNull();			
 	}
 }

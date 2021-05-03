@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.CompanyTypeRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
+import hu.webuni.hr.gyd.repository.PositionRepository;
 
 @Service
 public class CompanyService {
@@ -26,6 +28,9 @@ public class CompanyService {
 	
 	@Autowired
 	CompanyTypeRepository companyTypeRepository;
+
+	@Autowired
+	PositionRepository positionTypeRepository;
 	
 	public List<Company> getAll() {
 		return companyRepository.findAll(Sort.by("name"));
@@ -75,7 +80,11 @@ public class CompanyService {
 	
 	@Transactional
 	public Company addEmployee(long companyId, Employee employee) {
-		Company company = companyRepository.findById(companyId).orElseThrow(() -> new NoSuchElementException());
+		Position position = positionTypeRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new NoSuchElementException());
+		employee.setPosition(position);
+		Company company = companyRepository.findByIdWithEmployees(companyId);
+		if(company == null)
+			throw new NoSuchElementException();
 		company.addEmployee(employee);
 		employeeRepository.save(employee);
 		return company;
@@ -84,14 +93,18 @@ public class CompanyService {
 	@Transactional
 	public void deleteEmployee(long companyId, long employeeId) {
 		Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
-		Company company = companyRepository.findById(companyId).orElseThrow(() -> new NoSuchElementException());
+		Company company = companyRepository.findByIdWithEmployees(companyId);
+		if(company == null)
+			throw new NoSuchElementException();
 		company.deleteEmployee(employee);
 		employeeRepository.save(employee);
 	}
 	
 	@Transactional
 	public Company changeEmployeeList(long companyId, List<Employee> employees) {
-		Company company = companyRepository.findById(companyId).get();
+		Company company = companyRepository.findByIdWithEmployees(companyId);
+		if(company == null)
+			throw new NoSuchElementException();
 		company.clearEmployeeList();
 		
 		for(Employee employee : employees) {

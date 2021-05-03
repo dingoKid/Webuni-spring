@@ -43,7 +43,7 @@ public class CompanyController {
 	
 	@Autowired
 	CompanyRepository companyRepository;	
-	
+
 	@GetMapping
 	public List<CompanyDto> allCompanies(@RequestParam(required = false, defaultValue = "false") boolean full) {
 		List<Company> companies = full ? companyService.getAllWithEmployees() : companyService.getAll();
