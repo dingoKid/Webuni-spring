@@ -3,6 +3,7 @@ package hu.webuni.hr.gyd.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,15 +55,30 @@ public class CompanyServiceIT {
 		companyBefore = companyService.saveCompany(companyBefore);
 		Position position = positionRepository.findByName("Driver").get();
 		Employee employeeToBeAdded = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);
-//		System.out.println(employeeRepository.findAll());
-		assertThat(15).isEqualTo(15);
-//		
-//		Company companyAfter = companyService.addEmployee(companyBefore.getCompanyId(), employeeToBeAdded);
-//		Employee employeeInCompanyList = companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().get(0);
-//		System.out.println(employeeInCompanyList);
-//		assertThat(employeeToBeAdded).usingRecursiveComparison()
-//			.ignoringFields("employeeId", "company")
-//			.isEqualTo(employeeInCompanyList);
 		
+		Company companyAfter = companyService.addEmployee(companyBefore.getCompanyId(), employeeToBeAdded);
+		Employee employeeInCompanyList = companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().get(0);
+		
+		assertThat(employeeToBeAdded).usingRecursiveComparison()
+			.ignoringFields("employeeId", "company")
+			.isEqualTo(employeeInCompanyList);
+		
+		assertThat(employeeInCompanyList.getCompany().getCompanyId()).isEqualTo(companyAfter.getCompanyId());		
+	}
+	
+	@Test
+	void testDeleteEmployee() throws Exception {		
+		CompanyType companyType = companyTypeRepository.findByName("KFT");
+		Company companyBefore = new Company(12345, "IBM", "Pecs", companyType);
+		companyBefore = companyService.saveCompany(companyBefore);
+		Position position = positionRepository.findByName("Driver").get();
+		Employee employeeToBeAdded = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);		
+		Company companyAfter = companyService.addEmployee(companyBefore.getCompanyId(), employeeToBeAdded);		
+		Employee employeeInCompanyList = companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().get(0);
+		companyService.deleteEmployee(companyAfter.getCompanyId(), employeeInCompanyList.getEmployeeId());
+		
+		assertThat(companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees()).doesNotContain(employeeInCompanyList);
+		assertThat(employeeInCompanyList.getCompany().getCompanyId()).isNull();
+			
 	}
 }

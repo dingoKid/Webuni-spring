@@ -83,8 +83,8 @@ public class CompanyService {
 	
 	@Transactional
 	public void deleteEmployee(long companyId, long employeeId) {
-		Employee employee = employeeRepository.findById(employeeId).get();
-		Company company = companyRepository.findById(companyId).get();
+		Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
+		Company company = companyRepository.findById(companyId).orElseThrow(() -> new NoSuchElementException());
 		company.deleteEmployee(employee);
 		employeeRepository.save(employee);
 	}
