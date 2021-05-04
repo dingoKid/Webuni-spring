@@ -8,16 +8,23 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
+import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
+import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 
 public abstract class AbstractEmployeeService implements EmployeeService {
 	
 	@Autowired
 	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	CompanyRepository companyRepository;
 		
 	public List<Employee> getAll() {
 		return employeeRepository.findAll();
@@ -52,16 +59,37 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		Long id = example.getEmployeeId();
 		String name = example.getName();
 		Position position = example.getPosition();
-		int salary = example.getSalary();
+		//int salary = example.getSalary();
 		LocalDateTime hiringDate = example.getHiringDate();
+		Company company = example.getCompany(); // == null ? null : companyRepository.findByNameWithEmployees(example.getCompany().getName()).get();
 		
 		Specification<Employee> spec = Specification.where(null);
 		
-		if(id > 0) {
+		if(id != null) {
 			spec = spec.and(EmployeeSpecifications.hasId(id));
 		}
 		
+		if(StringUtils.hasText(name)) {
+			spec = spec.and(EmployeeSpecifications.hasName(name));
+		}
 		
+		if(position != null) {
+			spec = spec.and(EmployeeSpecifications.hasPosition(position.getName()));
+		}
+		
+		/*if(salary > 0) {
+			spec = spec.and(EmployeeSpecifications.hasSalary(salary));
+		}*/
+		
+		if(hiringDate != null) {
+			spec = spec.and(EmployeeSpecifications.hasHiringDate(hiringDate));
+		}
+		
+		if(company != null) {
+			spec = spec.and(EmployeeSpecifications.hasCompany(company.getName()));
+		}
+		
+		return employeeRepository.findAll(spec, Sort.by("name"));
 	}
 	
 }

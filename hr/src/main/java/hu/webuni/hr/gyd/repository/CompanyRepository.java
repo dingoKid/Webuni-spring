@@ -1,6 +1,7 @@
 package hu.webuni.hr.gyd.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,5 +27,10 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	
 	@Query("select c from Company c where size(c.employees) > :number")
 	List<Company> findByEmployeesNumber(int number);
+	
+	@Query("select distinct c from Company c left join fetch c.employees where c.name = :name")
+	Optional<Company> findByNameWithEmployees(String name);
+	
+	Optional<Company> findByName(String name);
 	
 }

@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
+import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
@@ -137,5 +138,39 @@ public class EmployeeController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	@GetMapping(path = "/search")
+	public List<EmployeeDto> searchEmployees(@RequestParam(required = false) Long employeeid,
+											@RequestParam(required = false) String name,
+											@RequestParam(required = false) String position,
+											@RequestParam(required = false) LocalDateTime hiringdate,
+											@RequestParam(required = false) String companyname) {
+		Employee example = new Employee();
+		
+		if(position != null) {
+			Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+			example.setPosition(pos);
+		}
+		if(companyname != null) {
+			Company company = companyRepository.findByName(companyname).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+			example.setCompany(company);
+		}
+		example.setEmployeeId(employeeid);
+		example.setName(name);
+		
+		example.setHiringDate(hiringdate);
+		System.out.println(example);
+		
+		
+		return mapper.employeesToDtos(employeeService.findEmployeesByExample(example));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

@@ -19,4 +19,6 @@ public interface EmployeeService {
 	
 	public void deleteEmployee(long id);
 	
+	public List<Employee> findEmployeesByExample(Employee example);
+	
 }
