@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyd.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -7,8 +8,10 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 
 public abstract class AbstractEmployeeService implements EmployeeService {
@@ -43,6 +46,22 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 			employeeRepository.deleteById(id);
 		else
 			throw new NoSuchElementException();
+	}
+	
+	public List<Employee> findEmployeesByExample(Employee example) {
+		Long id = example.getEmployeeId();
+		String name = example.getName();
+		Position position = example.getPosition();
+		int salary = example.getSalary();
+		LocalDateTime hiringDate = example.getHiringDate();
+		
+		Specification<Employee> spec = Specification.where(null);
+		
+		if(id > 0) {
+			spec = spec.and(EmployeeSpecifications.hasId(id));
+		}
+		
+		
 	}
 	
 }

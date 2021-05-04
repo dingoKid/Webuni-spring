@@ -3,6 +3,7 @@ package hu.webuni.hr.gyd.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +48,11 @@ public class CompanyServiceIT {
 	}
 	
 	@Test
-	void testAddEmployee() throws Exception {		
+	void testAddEmployee() throws Exception {
 		CompanyType companyType = companyTypeRepository.findByName("KFT");
 		Company companyBefore = new Company(12345, "IBM", "Pecs", companyType);
 		companyBefore = companyService.saveCompany(companyBefore);
+		
 		Position position = positionRepository.findByName("Driver").get();
 		Employee employeeToBeAdded = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);
 		
@@ -61,17 +63,18 @@ public class CompanyServiceIT {
 			.ignoringFields("employeeId", "company")
 			.isEqualTo(employeeInCompanyList);
 		
-		assertThat(employeeInCompanyList.getCompany().getCompanyId()).isEqualTo(companyAfter.getCompanyId());		
+		assertThat(employeeInCompanyList.getCompany().getCompanyId()).isEqualTo(companyAfter.getCompanyId());
 	}
 	
 	@Test
-	void testDeleteEmployee() throws Exception {		
+	void testDeleteEmployee() throws Exception {
 		CompanyType companyType = companyTypeRepository.findByName("KFT");
 		Company companyBefore = new Company(12345, "IBM", "Pecs", companyType);
 		companyBefore = companyService.saveCompany(companyBefore);
+		
 		Position position = positionRepository.findByName("Driver").get();
-		Employee employeeToBeAdded = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);		
-		Company companyAfter = companyService.addEmployee(companyBefore.getCompanyId(), employeeToBeAdded);		
+		Employee employeeToBeAdded = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);
+		Company companyAfter = companyService.addEmployee(companyBefore.getCompanyId(), employeeToBeAdded);
 		assertThat(companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().size()).isEqualTo(1);
 		
 		Employee employeeInCompanyList = companyService.getByIdWithEmployees(companyAfter.getCompanyId()).getEmployees().get(0);
@@ -82,6 +85,36 @@ public class CompanyServiceIT {
 		
 		Long idInDatabase = employeeInCompanyList.getEmployeeId();
 		Employee deletedEmployee = employeeRepository.findById(idInDatabase).get();
-		assertThat(deletedEmployee.getCompany()).isNull();			
+		assertThat(deletedEmployee.getCompany()).isNull();
 	}
+	
+	@Test
+	void testchangeEmployeeList() throws Exception {
+		CompanyType companyType = companyTypeRepository.findByName("KFT");
+		Company companyBefore = new Company(12345, "IBM", "Pecs", companyType);
+		companyBefore = companyService.saveCompany(companyBefore);
+		
+		Position position = positionRepository.findByName("Driver").get();
+		Employee oldEmployee = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);
+		companyBefore.addEmployee(oldEmployee);
+		
+		Employee e1 = new Employee("employee1", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);
+		Employee e2 = new Employee("employee2", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);
+		Employee e3 = new Employee("employee3", position, 250000, LocalDateTime.of(2015,  10, 10, 0, 0), null);		
+		List<Employee> newEmployees = List.of(e1, e2, e3);
+		
+		companyService.changeEmployeeList(companyBefore.getCompanyId(), newEmployees);
+		
+		Company companyAfter = companyService.getByIdWithEmployees(companyBefore.getCompanyId());		
+		List<Employee> currentEmployees = companyAfter.getEmployees();
+		
+		assertThat(currentEmployees.containsAll(newEmployees));
+		assertThat(currentEmployees.size()).isEqualTo(3);
+		assertThat(currentEmployees).doesNotContain(oldEmployee);
+		
+		// assertThat(currentEmployees).hasSameElementsAs(newEmployees);	// ez valamiért stackoverflow-ra fut
+		
+				
+	}
+	
 }

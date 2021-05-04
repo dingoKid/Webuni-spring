@@ -90,10 +90,6 @@ public class CompanyController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}	
-		
-	
-	// ****************************************
-	
 	
 	@PostMapping("/{companyId}/hire")
 	public CompanyDto hireEmployee(@PathVariable long companyId, @RequestBody @Valid EmployeeDto employeeDto) {
@@ -122,8 +118,6 @@ public class CompanyController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
-	
-	// ****************************************
 	
 	@GetMapping("/salaryover")
 	public List<CompanyDto> getBySalary(@RequestParam int salary) {
