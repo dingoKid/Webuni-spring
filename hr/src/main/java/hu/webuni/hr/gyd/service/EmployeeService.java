@@ -15,6 +15,10 @@ public interface EmployeeService {
 	
 	public Employee saveEmployee(Employee employee);
 	
+	public Employee addPositionAndSave(Employee employee);
+	
+	public Employee addPositionAndEdit(long id, Employee employee);
+	
 	public Employee editEmployee(long id, Employee employee);
 	
 	public void deleteEmployee(long id);

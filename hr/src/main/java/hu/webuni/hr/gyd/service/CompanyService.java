@@ -86,7 +86,7 @@ public class CompanyService {
 		if(company == null)
 			throw new NoSuchElementException();
 		company.addEmployee(employee);
-		employeeRepository.save(employee);	// kell-e ??????
+		employeeRepository.save(employee);
 		return company;
 	}
 	
@@ -97,7 +97,7 @@ public class CompanyService {
 		if(company == null)
 			throw new NoSuchElementException();
 		company.deleteEmployee(employee);
-		employeeRepository.save(employee);		// kell-e ??????
+		//employeeRepository.save(employee);
 	}
 	
 	@Transactional
@@ -110,7 +110,7 @@ public class CompanyService {
 		
 		for(Employee employee : employees) {
 			company.addEmployee(employee);
-			employeeRepository.save(employee);		// kell-e ??????
+			employeeRepository.save(employee);
 		}
 		return company;
 	}

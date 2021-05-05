@@ -3,6 +3,7 @@ package hu.webuni.hr.gyd.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +23,7 @@ public class Employee {
 	private int salary;
 	private LocalDateTime hiringDate;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Company company;
 	
 	public Employee() {}

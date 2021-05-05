@@ -23,13 +23,15 @@ public class EmployeeControllerIT {
 
 	@Test
 	void testThatEmployeeIsAdded() throws Exception {
-		List<EmployeeDto> employeesBefore = getAllEmployees();		
-		EmployeeDto newEmployee = new EmployeeDto(5L, "kiss imre", "driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
+		List<EmployeeDto> employeesBefore = getAllEmployees();	
+		System.out.println(employeesBefore.size());
+		EmployeeDto newEmployee = new EmployeeDto(5L, "kiss imre", "Driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		
 		addEmployee(newEmployee);
-		List<EmployeeDto> employeesAfter = getAllEmployees();
-		employeesAfter.removeAll(employeesBefore);
 		
+		List<EmployeeDto> employeesAfter = getAllEmployees();
+		System.out.println(employeesAfter.size());
+		employeesAfter.removeAll(employeesBefore);
 		assertThat(employeesAfter).containsExactly(newEmployee);
 	}
 	
@@ -75,11 +77,9 @@ public class EmployeeControllerIT {
 	@Test
 	void testThatEmployeeIsModified() throws Exception {
 		EmployeeDto employeeBefore = getById(1L);
-		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "worker", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
-		
+		EmployeeDto modifierEmployee = new EmployeeDto(1L, "kiss imre", "Driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		modifyEmployee(employeeBefore.getEmployeeId(), modifierEmployee);
 		EmployeeDto newEmployee = getById(1L);
-		
 		assertThat(newEmployee).usingRecursiveComparison().isEqualTo(modifierEmployee);
 	}
 	
@@ -198,7 +198,7 @@ public class EmployeeControllerIT {
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
-			.isOk();		
+			.isOk();
 	}
 
 	private List<EmployeeDto> getAllEmployees() {

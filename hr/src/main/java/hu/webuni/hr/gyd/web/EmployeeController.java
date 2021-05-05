@@ -75,9 +75,11 @@ public class EmployeeController {
 	@PostMapping
 	public EmployeeDto addEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
 		Employee employee = mapper.DtoToEmployee(employeeDto);
-		Position position = positionRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		employee.setPosition(position);
-		employeeService.saveEmployee(employee);
+		try {
+			employee = employeeService.addPositionAndSave(employee);
+		} catch (NoSuchElementException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 		return mapper.employeeToDto(employee);
 	}
 
@@ -85,15 +87,12 @@ public class EmployeeController {
 	public EmployeeDto modifyEmployee(@PathVariable long id, @RequestBody @Valid EmployeeDto employeeDto) {
 		employeeDto.setEmployeeId(id);
 		Employee employee = mapper.DtoToEmployee(employeeDto);
-		Position position = positionRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		employee.setPosition(position);
 		
 		try {			
-			employeeService.editEmployee(id, employee);
+			employee = employeeService.addPositionAndEdit(id, employee);
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-
 		return mapper.employeeToDto(employee);
 	}
 
@@ -143,6 +142,7 @@ public class EmployeeController {
 	public List<EmployeeDto> searchEmployees(@RequestParam(required = false) Long employeeid,
 											@RequestParam(required = false) String name,
 											@RequestParam(required = false) String position,
+											@RequestParam(required = false) Integer salary,
 											@RequestParam(required = false) LocalDateTime hiringdate,
 											@RequestParam(required = false) String companyname) {
 		Employee example = new Employee();
@@ -151,17 +151,20 @@ public class EmployeeController {
 			Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 			example.setPosition(pos);
 		}
+		
 		if(companyname != null) {
 			Company company = companyRepository.findByName(companyname).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 			example.setCompany(company);
 		}
+		
+		if(salary == null)
+			example.setSalary(0);
+		else
+			example.setSalary(salary);
+		
 		example.setEmployeeId(employeeid);
-		example.setName(name);
-		
-		example.setHiringDate(hiringdate);
-		System.out.println(example);
-		
-		
+		example.setName(name);		
+		example.setHiringDate(hiringdate);		
 		return mapper.employeesToDtos(employeeService.findEmployeesByExample(example));
 	}
 	

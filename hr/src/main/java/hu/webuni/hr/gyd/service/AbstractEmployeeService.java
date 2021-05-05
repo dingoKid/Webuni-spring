@@ -17,6 +17,7 @@ import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
+import hu.webuni.hr.gyd.repository.PositionRepository;
 
 public abstract class AbstractEmployeeService implements EmployeeService {
 	
@@ -25,13 +26,30 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 	
 	@Autowired
 	CompanyRepository companyRepository;
-		
+	
+	@Autowired
+	PositionRepository positionRepository;
+	
 	public List<Employee> getAll() {
 		return employeeRepository.findAll();
 	}
 	
 	public Optional<Employee> getById(long id) {
 		return employeeRepository.findById(id);
+	}
+	
+	@Transactional
+	public Employee addPositionAndSave(Employee employee) {
+		Position position = positionRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new NoSuchElementException());
+		employee.setPosition(position);
+		return saveEmployee(employee);
+	}
+	
+	@Transactional
+	public Employee addPositionAndEdit(long id, Employee employee) {
+		Position position = positionRepository.findByName(employee.getPosition().getName()).orElseThrow(() -> new NoSuchElementException());
+		employee.setPosition(position);
+		return editEmployee(id, employee);
 	}
 	
 	@Transactional
@@ -42,7 +60,7 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 	@Transactional
 	public Employee editEmployee(long id, Employee employee) {
 		if(employeeRepository.existsById(id))
-			return employeeRepository.save(employee);
+			return saveEmployee(employee);
 		else 
 			throw new NoSuchElementException();
 	}
@@ -59,7 +77,7 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		Long id = example.getEmployeeId();
 		String name = example.getName();
 		Position position = example.getPosition();
-		//int salary = example.getSalary();
+		Integer salary = example.getSalary();
 		LocalDateTime hiringDate = example.getHiringDate();
 		Company company = example.getCompany(); // == null ? null : companyRepository.findByNameWithEmployees(example.getCompany().getName()).get();
 		
@@ -77,9 +95,9 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 			spec = spec.and(EmployeeSpecifications.hasPosition(position.getName()));
 		}
 		
-		/*if(salary > 0) {
+		if(salary > 0) {
 			spec = spec.and(EmployeeSpecifications.hasSalary(salary));
-		}*/
+		}
 		
 		if(hiringDate != null) {
 			spec = spec.and(EmployeeSpecifications.hasHiringDate(hiringDate));

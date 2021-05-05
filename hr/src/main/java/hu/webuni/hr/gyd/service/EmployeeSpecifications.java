@@ -8,7 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 import hu.webuni.hr.gyd.model.Company_;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Employee_;
-import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.model.Position_;
 
 public class EmployeeSpecifications {
@@ -25,11 +24,9 @@ public class EmployeeSpecifications {
 		return (root, cq, cb) -> cb.equal(root.get(Employee_.position).get(Position_.name), position);
 	}
 
-	/*public static Specification<Employee> hasSalary(int salary) {
-		Double over = salary * 0.95;
-		Double under = salary * 1.05;
-		return (root, cq, cb) -> cb.between(root.get(Employee_.salary), 1, 2);
-	}*/
+	public static Specification<Employee> hasSalary(Integer salary) {
+		return (root, cq, cb) -> cb.between(root.get(Employee_.salary), (int)(salary * 0.95), (int)(salary * 1.05));
+	}
 
 	public static Specification<Employee> hasHiringDate(LocalDateTime hiringDate) {
 		LocalDateTime start = LocalDateTime.of(hiringDate.toLocalDate(), LocalTime.of(0, 0));
