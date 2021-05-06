@@ -1,5 +1,6 @@
 spring:
-  profiles:    active: smart  mvc:    format:      date-time: yyyy-MM-dd HH:mm:ss
+  profiles:    active: smart  mvc:    format:
+      date: yyyy-MM-dd      date-time: yyyy-MM-dd HH:mm:ss
   thymeleaf:
     cache: false
   jpa:
