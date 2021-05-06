@@ -21,7 +21,7 @@ public class EmployeeSpecifications {
 	}
 
 	public static Specification<Employee> hasPosition(String position) {
-		return (root, cq, cb) -> cb.equal(cb.lower(root.get(Employee_.position).get(Position_.name)), position.toLowerCase());
+		return (root, cq, cb) -> cb.equal(root.get(Employee_.position).get(Position_.name), position);
 	}
 
 	public static Specification<Employee> hasSalary(Integer salary) {
@@ -34,7 +34,7 @@ public class EmployeeSpecifications {
 	}
 
 	public static Specification<Employee> hasCompany(String companyName) {
-		return (root, cq, cb) -> cb.like(root.get(Employee_.company).get(Company_.name), companyName + "%");
+		return (root, cq, cb) -> cb.like(cb.lower(root.get(Employee_.company).get(Company_.name)), companyName.toLowerCase() + "%");
 	}
 
 }

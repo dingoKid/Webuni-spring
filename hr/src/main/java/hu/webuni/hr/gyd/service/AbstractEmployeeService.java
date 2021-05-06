@@ -79,7 +79,7 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		Position position = example.getPosition();
 		Integer salary = example.getSalary();
 		LocalDateTime hiringDate = example.getHiringDate();
-		hiringDate = hiringDate.withHour(0).withMinute(0);
+		
 		System.out.println(hiringDate);
 		Company company = example.getCompany();
 		
@@ -102,6 +102,7 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		}
 		
 		if(hiringDate != null) {
+			hiringDate = hiringDate.withHour(0).withMinute(0);
 			spec = spec.and(EmployeeSpecifications.hasHiringDate(hiringDate));
 		}
 		
