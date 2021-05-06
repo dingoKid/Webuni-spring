@@ -31,6 +31,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 	@Query("select distinct c from Company c left join fetch c.employees where c.name = :name")
 	Optional<Company> findByNameWithEmployees(String name);
 	
+	@Query("select c from Company c where lower(c.name) = lower(:name)")
 	Optional<Company> findByName(String name);
 	
 }

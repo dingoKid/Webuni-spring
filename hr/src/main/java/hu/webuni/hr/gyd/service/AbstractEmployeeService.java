@@ -80,7 +80,6 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		Integer salary = example.getSalary();
 		LocalDateTime hiringDate = example.getHiringDate();
 		
-		System.out.println(hiringDate);
 		Company company = example.getCompany();
 		
 		Specification<Employee> spec = Specification.where(null);
@@ -102,7 +101,6 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		}
 		
 		if(hiringDate != null) {
-			hiringDate = hiringDate.withHour(0).withMinute(0);
 			spec = spec.and(EmployeeSpecifications.hasHiringDate(hiringDate));
 		}
 		

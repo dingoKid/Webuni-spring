@@ -24,13 +24,13 @@ public class EmployeeControllerIT {
 	@Test
 	void testThatEmployeeIsAdded() throws Exception {
 		List<EmployeeDto> employeesBefore = getAllEmployees();	
-		EmployeeDto newEmployee = new EmployeeDto(5L, "kiss imre", "Driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
+		EmployeeDto newEmployee = new EmployeeDto(null, "kiss imre", "Driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		
 		addEmployee(newEmployee);
 		
 		List<EmployeeDto> employeesAfter = getAllEmployees();
 		employeesAfter.removeAll(employeesBefore);
-		assertThat(employeesAfter).containsExactly(newEmployee);
+		assertThat(employeesAfter.get(0)).usingRecursiveComparison().ignoringFields("EmployeeId").isEqualTo(newEmployee);
 	}
 	
 	@Test

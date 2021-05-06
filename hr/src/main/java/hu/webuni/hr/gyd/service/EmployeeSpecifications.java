@@ -17,7 +17,7 @@ public class EmployeeSpecifications {
 	}
 
 	public static Specification<Employee> hasName(String name) {
-		return (root, cq, cb) -> cb.like(root.get(Employee_.name), name + "%");
+		return (root, cq, cb) -> cb.like(cb.lower(root.get(Employee_.name)), name.toLowerCase() + "%");
 	}
 
 	public static Specification<Employee> hasPosition(String position) {

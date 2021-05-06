@@ -148,13 +148,13 @@ public class EmployeeController {
 		Employee example = new Employee();
 		
 		if(position != null) {
-			Position pos = positionRepository.findByName(position).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-			example.setPosition(pos);
+			example.setPosition(new Position());
+			example.getPosition().setName(position);
 		}
 		
 		if(companyname != null) {
-			Company company = companyRepository.findByName(companyname).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-			example.setCompany(company);
+			example.setCompany(new Company());
+			example.getCompany().setName(companyname);
 		}
 		
 		if(salary == null)
