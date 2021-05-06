@@ -79,7 +79,9 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		Position position = example.getPosition();
 		Integer salary = example.getSalary();
 		LocalDateTime hiringDate = example.getHiringDate();
-		Company company = example.getCompany(); // == null ? null : companyRepository.findByNameWithEmployees(example.getCompany().getName()).get();
+		hiringDate = hiringDate.withHour(0).withMinute(0);
+		System.out.println(hiringDate);
+		Company company = example.getCompany();
 		
 		Specification<Employee> spec = Specification.where(null);
 		

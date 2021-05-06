@@ -164,7 +164,7 @@ public class EmployeeController {
 		
 		example.setEmployeeId(employeeid);
 		example.setName(name);		
-		example.setHiringDate(hiringdate);		
+		example.setHiringDate(hiringdate);
 		return mapper.employeesToDtos(employeeService.findEmployeesByExample(example));
 	}
 	

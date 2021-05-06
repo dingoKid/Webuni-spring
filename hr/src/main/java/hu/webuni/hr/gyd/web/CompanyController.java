@@ -131,13 +131,12 @@ public class CompanyController {
 	
 	@GetMapping("/average/{companyId}")
 	public List<PositionSalary> getSalariesById(@PathVariable long companyId) {
-		if(companyRepository.existsById(companyId))
-			return companyRepository.findSalariesById(companyId);
-		else
+		try {
+			return companyService.getCompanyAverages(companyId);
+		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 	}
-	
-	
 	
 	
 

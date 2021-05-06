@@ -21,7 +21,7 @@ public class EmployeeSpecifications {
 	}
 
 	public static Specification<Employee> hasPosition(String position) {
-		return (root, cq, cb) -> cb.equal(root.get(Employee_.position).get(Position_.name), position);
+		return (root, cq, cb) -> cb.equal(cb.lower(root.get(Employee_.position).get(Position_.name)), position.toLowerCase());
 	}
 
 	public static Specification<Employee> hasSalary(Integer salary) {

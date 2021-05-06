@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
+import hu.webuni.hr.gyd.model.PositionSalary;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.CompanyTypeRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
@@ -113,6 +114,13 @@ public class CompanyService {
 			employeeRepository.save(employee);
 		}
 		return company;
+	}
+	
+	public List<PositionSalary> getCompanyAverages(long companyId) {
+		if(companyRepository.existsById(companyId))
+			return companyRepository.findSalariesById(companyId);
+		else
+			throw new NoSuchElementException();
 	}
 		
 		

@@ -43,8 +43,6 @@ public class CompanyServiceIT {
 	public void init() {
 		employeeRepository.deleteAll();
 		companyRepository.deleteAll();
-		//positionRepository.deleteAll();
-		//companyTypeRepository.deleteAll();
 	}
 	
 	@Test
@@ -112,7 +110,7 @@ public class CompanyServiceIT {
 		assertThat(currentEmployees.size()).isEqualTo(3);
 		assertThat(currentEmployees).doesNotContain(oldEmployee);
 		
-		// assertThat(currentEmployees).hasSameElementsAs(newEmployees);	// ez valamiért stackoverflow-ra fut
+//		 assertThat(currentEmployees).hasSameElementsAs(newEmployees);	// ez valamiért stackoverflow-ra fut
 		
 				
 	}

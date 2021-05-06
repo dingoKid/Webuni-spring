@@ -24,13 +24,11 @@ public class EmployeeControllerIT {
 	@Test
 	void testThatEmployeeIsAdded() throws Exception {
 		List<EmployeeDto> employeesBefore = getAllEmployees();	
-		System.out.println(employeesBefore.size());
 		EmployeeDto newEmployee = new EmployeeDto(5L, "kiss imre", "Driver", 150000, LocalDateTime.of(2015, 11, 10, 0, 0));
 		
 		addEmployee(newEmployee);
 		
 		List<EmployeeDto> employeesAfter = getAllEmployees();
-		System.out.println(employeesAfter.size());
 		employeesAfter.removeAll(employeesBefore);
 		assertThat(employeesAfter).containsExactly(newEmployee);
 	}
