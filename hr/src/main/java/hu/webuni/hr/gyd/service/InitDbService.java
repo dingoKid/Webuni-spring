@@ -94,6 +94,7 @@ public class InitDbService {
 		HolidayClaim hc2 = new HolidayClaim(e2, LocalDate.of(2020, 2, 15), LocalDate.of(2020, 4, 10), LocalDate.of(2020, 4, 25));
 		HolidayClaim hc3 = new HolidayClaim(e3, LocalDate.of(2020, 3, 25), LocalDate.of(2020, 3, 26), LocalDate.of(2020, 3, 28));
 		hc3.setPrincipal(e12);
+		hc3.setApproved(true);
 		
 		holidayClaimRepository.saveAll(List.of(hc1, hc2, hc3));
 		

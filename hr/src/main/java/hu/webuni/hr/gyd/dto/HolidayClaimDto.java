@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class HolidayClaimDto {
 	
+	private Long claimNumber;
 	private String claimant;
 	private String principal;
 	private LocalDate timeOfApplication;
@@ -16,6 +17,14 @@ public class HolidayClaimDto {
 		this.timeOfApplication = timeOfApplication;
 		this.start = start;
 		this.ending = ending;
+	}
+
+	public Long getClaimNumber() {
+		return claimNumber;
+	}
+
+	public void setClaimNumber(Long claimNumber) {
+		this.claimNumber = claimNumber;
 	}
 
 	public String getClaimant() {
