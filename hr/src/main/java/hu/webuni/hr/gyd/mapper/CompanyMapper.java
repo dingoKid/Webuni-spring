@@ -33,6 +33,7 @@ public interface CompanyMapper {
 	}
 	
 	@Mapping(source = "companyType", target = "companyType", qualifiedByName = "stringToCompanyType")
+	@Mapping(target = "position", ignore = true)
 	Company DtoToCompany(CompanyDto companyDto);
 
 }

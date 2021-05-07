@@ -26,9 +26,13 @@ public class Employee {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Company company;
 	
-	public Employee() {}
+
+	public Employee() {}	
 	
-	public Employee(Long employeeId, String name, Position position, int salary, LocalDateTime hiringDate, Company company) {
+	
+	public Employee(Long employeeId, String name, Position position, int salary, LocalDateTime hiringDate,
+			Company company) {
+		super();
 		this.employeeId = employeeId;
 		this.name = name;
 		this.position = position;
@@ -36,7 +40,9 @@ public class Employee {
 		this.hiringDate = hiringDate;
 		this.company = company;
 	}
-	
+
+
+
 	public Employee(String name, Position position, int salary, LocalDateTime hiringDate, Company company) {
 		this.name = name;
 		this.position = position;
@@ -93,6 +99,7 @@ public class Employee {
 		this.company = company;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "Employee [EmployeeId=" + employeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
