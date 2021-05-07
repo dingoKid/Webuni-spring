@@ -27,11 +27,42 @@ public class HolidayClaimService {
 	}
 
 	@Transactional
-	public HolidayClaim createClaim(HolidayClaim holidayClaim, Long id) {
-		Employee claimant = employeeRepository.findById(id).orElseThrow(() -> new NoSuchElementException());		
+	public HolidayClaim createClaim(HolidayClaim holidayClaim, Long employeeId) {
+		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
 		holidayClaim.setClaimant(claimant);
 		holidayClaim.setPrincipal(null);		
 		holidayClaim = claimRepository.save(holidayClaim);
 		return holidayClaim;
+	}
+	
+	@Transactional
+	public HolidayClaim approveClaim(Long claimId, Long principalId) {
+		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
+		if(claim.getPrincipal() == null) {
+			Employee principal = employeeRepository.findById(principalId).orElseThrow(() -> new NoSuchElementException());
+			claim.setPrincipal(principal);			
+		}		
+		return claim;
+	}
+
+	@Transactional
+	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long employeeId, Long claimId) {
+		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
+		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
+		if(claim.getClaimant().getEmployeeId() == claimant.getEmployeeId() && claim.getPrincipal() == null) {
+			claim.setStart(newClaim.getStart());
+			claim.setEnding(newClaim.getEnding());
+			claim.setTimeOfApplication(newClaim.getTimeOfApplication());
+		}
+		return claim;
+	}
+
+	@Transactional
+	public void deleteClaim(Long employeeId, Long claimId) {
+		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
+		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
+		if(claim.getClaimant().getEmployeeId() == claimant.getEmployeeId() && claim.getPrincipal() == null) {
+			claimRepository.deleteById(claimId);
+		}
 	}
 }
