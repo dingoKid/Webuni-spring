@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyd.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,11 +12,13 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.CompanyType;
 import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.HolidayClaim;
 import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.model.Requirement;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
 import hu.webuni.hr.gyd.repository.CompanyTypeRepository;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
+import hu.webuni.hr.gyd.repository.HolidayClaimRepository;
 import hu.webuni.hr.gyd.repository.PositionRepository;
 
 @Service
@@ -33,6 +36,9 @@ public class InitDbService {
 	@Autowired
 	PositionRepository positionRepository;
 	
+	@Autowired
+	HolidayClaimRepository holidayClaimRepository;
+	
 	@Transactional
 	public void clearDB() {
 		employeeRepository.deleteAll();
@@ -43,6 +49,8 @@ public class InitDbService {
 	
 	@Transactional
 	public void insertTestData() {
+		
+		
 		
 		Position p1 = new Position(1L, "Driver", Requirement.NINCS);
 		Position p2 = new Position(2L, "Manager", Requirement.FOISKOLA);
@@ -81,6 +89,13 @@ public class InitDbService {
 		Employee e12 = new Employee(12L, "Zoltan Gabor", p1, 350000, LocalDateTime.of(2015, 2, 10, 0, 0), c3);
 		
 		employeeRepository.saveAll(List.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12));
+		
+		HolidayClaim hc1 = new HolidayClaim(e1, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
+		HolidayClaim hc2 = new HolidayClaim(e2, LocalDate.of(2020, 2, 15), LocalDate.of(2020, 4, 10), LocalDate.of(2020, 4, 25));
+		HolidayClaim hc3 = new HolidayClaim(e3, LocalDate.of(2020, 3, 25), LocalDate.of(2020, 3, 26), LocalDate.of(2020, 3, 28));
+		hc3.setPrincipal(e12);
+		
+		holidayClaimRepository.saveAll(List.of(hc1, hc2, hc3));
 		
 		
 	}
