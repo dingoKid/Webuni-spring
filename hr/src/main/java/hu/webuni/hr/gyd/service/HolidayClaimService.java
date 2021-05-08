@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.model.Employee;
@@ -24,6 +26,10 @@ public class HolidayClaimService {
 
 	public List<HolidayClaim> getAll() {
 		return claimRepository.findAll();
+	}
+
+	public Page<HolidayClaim> getAllPaged(Pageable page) {
+		return claimRepository.findAll(page);
 	}
 
 	@Transactional
@@ -47,9 +53,9 @@ public class HolidayClaimService {
 
 	@Transactional
 	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long employeeId, Long claimId) {
-		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
+		if(!employeeRepository.existsById(employeeId)) throw new NoSuchElementException();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
-		if(claim.getClaimant().getEmployeeId() == claimant.getEmployeeId() && claim.getPrincipal() == null) {
+		if(claim.getPrincipal() == null) {
 			claim.setStart(newClaim.getStart());
 			claim.setEnding(newClaim.getEnding());
 			claim.setTimeOfApplication(newClaim.getTimeOfApplication());
@@ -59,10 +65,11 @@ public class HolidayClaimService {
 
 	@Transactional
 	public void deleteClaim(Long employeeId, Long claimId) {
-		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
+		if(!employeeRepository.existsById(employeeId)) throw new NoSuchElementException();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
-		if(claim.getClaimant().getEmployeeId() == claimant.getEmployeeId() && claim.getPrincipal() == null) {
+		if(claim.getPrincipal() == null) {
 			claimRepository.deleteById(claimId);
 		}
 	}
+
 }
