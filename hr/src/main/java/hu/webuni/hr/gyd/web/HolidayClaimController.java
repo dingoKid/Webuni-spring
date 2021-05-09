@@ -22,6 +22,7 @@ import hu.webuni.hr.gyd.dto.HolidayClaimDto;
 import hu.webuni.hr.gyd.mapper.HolidayClaimMapper;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.HolidayClaim;
+import hu.webuni.hr.gyd.model.HolidayClaimSearch;
 import hu.webuni.hr.gyd.service.HolidayClaimService;
 
 @RestController
@@ -80,15 +81,14 @@ public class HolidayClaimController {
 	
 	@GetMapping("/search")
 	public List<HolidayClaimDto> searchClaims(
-				@RequestParam(required = false) boolean approved,
+				@RequestParam(required = false) Boolean approved,
 				@RequestParam(required = false) String claimant,
 				@RequestParam(required = false) String principal,
 				@RequestParam(required = false) LocalDate applicationStart,
 				@RequestParam(required = false) LocalDate applicationEnd,
 				@RequestParam(required = false) LocalDate holidayStart,
 				@RequestParam(required = false) LocalDate holidayEnd) {
-		HolidayClaim example = new HolidayClaim();
-		example.setApproved(approved);
+		HolidayClaimSearch example = new HolidayClaimSearch();
 		
 		if(claimant != null) {
 			example.setClaimant(new Employee());
@@ -100,13 +100,38 @@ public class HolidayClaimController {
 			example.getPrincipal().setName(principal);
 		}
 		
+		if(applicationStart != null && applicationEnd == null)
+			applicationEnd = LocalDate.now();
+
+		if(applicationStart == null && applicationEnd != null)
+			applicationStart = LocalDate.now().minusYears(50);
+		
 		if(applicationStart.isAfter(applicationEnd)) {
 			LocalDate temp = applicationStart;
 			applicationStart = applicationEnd;
 			applicationEnd = temp;
 		}
 		
-		return null;
+		if(holidayStart != null && holidayEnd == null)
+			holidayEnd = LocalDate.now();
+
+		if(holidayStart == null && holidayEnd != null)
+			holidayStart = LocalDate.now().minusYears(50);
+		
+		if(holidayStart.isAfter(holidayEnd)) {
+			LocalDate temp = holidayStart;
+			holidayStart = holidayEnd;
+			holidayEnd = temp;
+		}
+		
+		example.setApproved(approved);		
+		example.setStartOfApplication(applicationStart);
+		example.setEndOfApplication(applicationEnd);
+		example.setStart(holidayStart);
+		example.setEnding(holidayEnd);
+		
+		List<HolidayClaim> searchResult = holidayClaimService.findByExample(example);		
+		return holidayClaimMapper.claimsToDtos(searchResult);
 	}
 	
 	

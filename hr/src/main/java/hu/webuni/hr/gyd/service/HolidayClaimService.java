@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyd.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -8,10 +9,12 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.HolidayClaim;
+import hu.webuni.hr.gyd.model.HolidayClaimSearch;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.repository.HolidayClaimRepository;
 
@@ -70,6 +73,40 @@ public class HolidayClaimService {
 		if(claim.getPrincipal() == null) {
 			claimRepository.deleteById(claimId);
 		}
+	}
+
+	public List<HolidayClaim> findByExample(HolidayClaimSearch example) {
+		Employee claimant = example.getClaimant();
+		Employee principal = example.getPrincipal();
+		LocalDate startOfApplication = example.getStartOfApplication();
+		LocalDate endOfApplication = example.getEndOfApplication();
+		LocalDate start = example.getStart();
+		LocalDate ending = example.getEnding();
+		Boolean isApproved = example.isApproved();
+		
+		Specification<HolidayClaim> spec = Specification.where(null);
+		
+		if(claimant != null) {
+			spec = spec.and(HolidayClaimSpecifications.hasClaimant(claimant));
+		}
+
+		if(principal != null) {
+			spec = spec.and(HolidayClaimSpecifications.hasPrincipal(principal));
+		}
+		
+		if(startOfApplication != null) {
+			spec = spec.and(HolidayClaimSpecifications.hasStartAndEndOfApplication(startOfApplication, endOfApplication));
+		}
+		
+		if(start != null) {
+			spec = spec.and(HolidayClaimSpecifications.hasStartAndEndOfApplicationHoliday(start, ending));
+		}
+		
+		if(isApproved != null) {
+			spec = spec.and(HolidayClaimSpecifications.hasApproval(isApproved));
+		}
+		
+		return claimRepository.findAll(spec);
 	}
 
 }

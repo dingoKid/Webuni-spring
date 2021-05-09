@@ -22,6 +22,8 @@ public class EmployeeDto {
 	@Past
 	private LocalDateTime hiringDate;
 	
+	public EmployeeDto() {}
+	
 	public EmployeeDto(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate) {
 		EmployeeId = employeeId;
 		this.name = name;

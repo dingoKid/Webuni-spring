@@ -25,7 +25,7 @@ public class HolidayClaim {
 	private LocalDate timeOfApplication;
 	private LocalDate start;
 	private LocalDate ending;
-	private boolean isApproved;
+	private Boolean isApproved;
 		
 
 	public HolidayClaim() {	}
@@ -99,12 +99,12 @@ public class HolidayClaim {
 	}
 
 
-	public boolean isApproved() {
+	public Boolean isApproved() {
 		return this.principal == null ? false : true;
 	}
 
 
-	public void setApproved(boolean isApproved) {
+	public void setApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
 
