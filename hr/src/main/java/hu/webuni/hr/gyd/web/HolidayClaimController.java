@@ -106,7 +106,7 @@ public class HolidayClaimController {
 		if(applicationStart == null && applicationEnd != null)
 			applicationStart = LocalDate.now().minusYears(50);
 		
-		if(applicationStart.isAfter(applicationEnd)) {
+		if(applicationStart != null && applicationEnd != null && applicationStart.isAfter(applicationEnd)) {
 			LocalDate temp = applicationStart;
 			applicationStart = applicationEnd;
 			applicationEnd = temp;
@@ -118,7 +118,7 @@ public class HolidayClaimController {
 		if(holidayStart == null && holidayEnd != null)
 			holidayStart = LocalDate.now().minusYears(50);
 		
-		if(holidayStart.isAfter(holidayEnd)) {
+		if(holidayStart != null && holidayEnd != null && holidayStart.isAfter(holidayEnd)) {
 			LocalDate temp = holidayStart;
 			holidayStart = holidayEnd;
 			holidayEnd = temp;

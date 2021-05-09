@@ -4,34 +4,15 @@ import java.time.LocalDate;
 
 public class HolidayClaimSearch {
 	
-//	private Long claimNumber;
 	private Employee claimant;
 	private Employee principal;
 	private LocalDate startOfApplication;
 	private LocalDate endOfApplication;
 	private LocalDate start;
 	private LocalDate ending;
-	private boolean isApproved;
+	private Boolean isApproved;
 	
 	public HolidayClaimSearch() {}
-	
-//	public HolidayClaimSearchDto(String claimant, LocalDate timeOfApplication, LocalDate start, LocalDate ending) {
-//		this.claimant = claimant;
-//		this.timeOfApplication = timeOfApplication;
-//		this.start = start;
-//		this.ending = ending;
-//	}
-
-//	public Long getClaimNumber() {
-//		return claimNumber;
-//	}
-//
-//	public void setClaimNumber(Long claimNumber) {
-//		this.claimNumber = claimNumber;
-//	}
-	
-	
-
 
 	public LocalDate getStartOfApplication() {
 		return startOfApplication;
@@ -81,11 +62,11 @@ public class HolidayClaimSearch {
 		this.ending = ending;
 	}
 
-	public boolean isApproved() {
+	public Boolean isApproved() {
 		return isApproved;
 	}
 
-	public void setApproved(boolean isApproved) {
+	public void setApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
 	

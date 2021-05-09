@@ -10,13 +10,15 @@ public class HolidayClaimDto {
 	private LocalDate timeOfApplication;
 	private LocalDate start;
 	private LocalDate ending;
-	private boolean isApproved;
+	private Boolean isApproved;
 	
-	public HolidayClaimDto(String claimant, LocalDate timeOfApplication, LocalDate start, LocalDate ending) {
-		this.claimant = claimant;
+	public HolidayClaimDto() {}
+	
+	public HolidayClaimDto(LocalDate timeOfApplication, LocalDate start, LocalDate ending) {
 		this.timeOfApplication = timeOfApplication;
 		this.start = start;
 		this.ending = ending;
+		isApproved = false;
 	}
 
 	public Long getClaimNumber() {
@@ -67,12 +69,44 @@ public class HolidayClaimDto {
 		this.ending = ending;
 	}
 
-	public boolean isApproved() {
+	public Boolean isApproved() {
 		return isApproved;
 	}
 
-	public void setApproved(boolean isApproved) {
+	public void setApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((claimNumber == null) ? 0 : claimNumber.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		HolidayClaimDto other = (HolidayClaimDto) obj;
+		if (claimNumber == null) {
+			if (other.claimNumber != null)
+				return false;
+		} else if (!claimNumber.equals(other.claimNumber))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "HolidayClaimDto [claimNumber=" + claimNumber + ", claimant=" + claimant + ", principal=" + principal
+				+ ", timeOfApplication=" + timeOfApplication + ", start=" + start + ", ending=" + ending
+				+ ", isApproved=" + isApproved + "]";
 	}
 	
 	
