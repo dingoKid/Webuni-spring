@@ -60,20 +60,20 @@ public class HolidayClaimController {
 		}
 	}
 	
-	@PutMapping("/modify/{employeeId}/{claimId}")
-	public HolidayClaimDto modifyClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long employeeId, @PathVariable Long claimId) {
+	@PutMapping("/modify/{claimId}")
+	public HolidayClaimDto modifyClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long claimId) {
 		HolidayClaim holidayClaim = holidayClaimMapper.dtoToClaim(claim);
 		try {
-			return holidayClaimMapper.claimToDto(holidayClaimService.modifyClaim(holidayClaim, employeeId, claimId));
+			return holidayClaimMapper.claimToDto(holidayClaimService.modifyClaim(holidayClaim, claimId));
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	@DeleteMapping("/delete/{employeeId}/{claimId}")
-	public void deleteClaim(@PathVariable Long employeeId, @PathVariable Long claimId) {
+	@DeleteMapping("/delete/{claimId}")
+	public void deleteClaim(@PathVariable Long claimId) {
 		try {
-			holidayClaimService.deleteClaim(employeeId, claimId);
+			holidayClaimService.deleteClaim(claimId);
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}

@@ -55,8 +55,7 @@ public class HolidayClaimService {
 	}
 
 	@Transactional
-	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long employeeId, Long claimId) {
-		if(!employeeRepository.existsById(employeeId)) throw new NoSuchElementException();
+	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long claimId) {
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
 		if(claim.getPrincipal() == null) {
 			claim.setStart(newClaim.getStart());
@@ -67,8 +66,7 @@ public class HolidayClaimService {
 	}
 
 	@Transactional
-	public void deleteClaim(Long employeeId, Long claimId) {
-		if(!employeeRepository.existsById(employeeId)) throw new NoSuchElementException();
+	public void deleteClaim(Long claimId) {
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
 		if(claim.getPrincipal() == null) {
 			claimRepository.deleteById(claimId);

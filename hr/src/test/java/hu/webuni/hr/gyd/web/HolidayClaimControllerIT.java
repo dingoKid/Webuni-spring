@@ -1,10 +1,12 @@
 package hu.webuni.hr.gyd.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -83,6 +85,72 @@ private static final String BASE_URI = "/api/holidays";
 		HolidayClaimDto claim = approveClaimExpectedNotFound(claimId, principalId);
 		
 		assertThat(claim.isApproved()).isNull();
+	}
+	
+	@Test
+	void testThatClaimIsModified() throws Exception {
+		Long employeeId = 1L;
+		HolidayClaimDto oldClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 3, 5));
+		oldClaim = createClaim(oldClaim, employeeId);
+		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+		
+		oldClaim = modifyClaim(oldClaim.getClaimNumber(), newClaim);
+		
+		assertThat(oldClaim).usingRecursiveComparison().ignoringFields("claimNumber", "claimant").isEqualTo(newClaim);
+	}
+	
+	@Test
+	void testThatClaimIsNotModifiedBecauseClaimDoesNotExist() throws Exception {
+		Long claimId = 110L;
+		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+		
+		HolidayClaimDto claim = modifyClaimExpectedNotFound(claimId, newClaim);
+		
+		assertThat(claim).usingRecursiveComparison().ignoringFields("claimNumber", "claimant").isNotEqualTo(newClaim);
+		assertThat(claim).usingRecursiveComparison().isEqualTo(new HolidayClaimDto());
+	}
+	
+	@Test
+	void testThatClaimIsDeleted() throws Exception {
+		List<HolidayClaimDto> claimsBefore = getAllClaims();
+		HolidayClaimDto claim = claimsBefore.get(0);
+		
+		deleteClaim(claim.getClaimNumber());
+		List<HolidayClaimDto> claimsAfter= getAllClaims();
+		
+		assertThat(claim).isNull();
+	}
+
+	private void deleteClaim(Long claimNumber) {
+		webTestClient
+			.delete()
+			.uri(BASE_URI + "/delete/" + claimNumber)
+			.exchange()
+			.expectStatus().isOk();			
+	}
+
+	private HolidayClaimDto modifyClaimExpectedNotFound(Long claimNumber, HolidayClaimDto newClaim) {
+		return webTestClient
+				.put()
+				.uri(BASE_URI + "/modify/" + claimNumber)
+				.bodyValue(newClaim)
+				.exchange()
+				.expectStatus().isNotFound()
+				.expectBody(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
+
+	private HolidayClaimDto modifyClaim(Long claimNumber, HolidayClaimDto newClaim) {
+		return webTestClient
+				.put()
+				.uri(BASE_URI + "/modify/" + claimNumber)
+				.bodyValue(newClaim)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
 	}
 
 	private HolidayClaimDto approveClaim(Long claimNumber, Long principalId) {
