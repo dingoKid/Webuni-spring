@@ -91,12 +91,18 @@ public class InitDbService {
 		employeeRepository.saveAll(List.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12));
 		
 		HolidayClaim hc1 = new HolidayClaim(e1, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
+		hc1.setPrincipal(e12);
+		hc1.setApproved(true);		
 		HolidayClaim hc2 = new HolidayClaim(e2, LocalDate.of(2020, 2, 15), LocalDate.of(2020, 4, 10), LocalDate.of(2020, 4, 25));
 		HolidayClaim hc3 = new HolidayClaim(e3, LocalDate.of(2020, 3, 25), LocalDate.of(2020, 3, 26), LocalDate.of(2020, 3, 28));
 		hc3.setPrincipal(e12);
 		hc3.setApproved(true);
+		HolidayClaim hc4 = new HolidayClaim(e5, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
+		hc4.setPrincipal(e12);
+		hc4.setApproved(true);		
+		HolidayClaim hc5 = new HolidayClaim(e6, LocalDate.of(2020, 11, 5), LocalDate.of(2020, 12, 10), LocalDate.of(2020, 12, 15));
 		
-		holidayClaimRepository.saveAll(List.of(hc1, hc2, hc3));
+		holidayClaimRepository.saveAll(List.of(hc1, hc2, hc3, hc4, hc5));
 		
 		
 	}

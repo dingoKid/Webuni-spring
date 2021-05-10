@@ -1,12 +1,11 @@
 package hu.webuni.hr.gyd.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -79,7 +78,7 @@ private static final String BASE_URI = "/api/holidays";
 	
 	@Test
 	void testThatClaimIsNotApprovedBecausePrincipalDoesNotExist() throws Exception {
-		Long claimId = 1L;
+		Long claimId = 2L;
 		Long principalId = 105L;
 		
 		HolidayClaimDto claim = approveClaimExpectedNotFound(claimId, principalId);
@@ -111,14 +110,86 @@ private static final String BASE_URI = "/api/holidays";
 	}
 	
 	@Test
-	void testThatClaimIsDeleted() throws Exception {
+	void testThatClaimIsDeletedWhenNotApproved() throws Exception {
+		HolidayClaimDto claim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+		claim = createClaim(claim, 1L);
+		claim.setPrincipal(null);
+		claim = modifyClaim(claim.getClaimNumber(), claim);
 		List<HolidayClaimDto> claimsBefore = getAllClaims();
-		HolidayClaimDto claim = claimsBefore.get(0);
+		assertThat(claimsBefore).contains(claim);
 		
 		deleteClaim(claim.getClaimNumber());
-		List<HolidayClaimDto> claimsAfter= getAllClaims();
 		
-		assertThat(claim).isNull();
+		List<HolidayClaimDto> claimsAfter = getAllClaims();
+		assertThat(claimsAfter).doesNotContain(claim);
+	}
+	
+	@Test
+	void testThatClaimIsNotDeletedWhenApproved() throws Exception {
+		HolidayClaimDto claim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+		claim = createClaim(claim, 1L);
+		claim = approveClaim(claim.getClaimNumber(), 2L);		
+		
+		List<HolidayClaimDto> claimsBefore = getAllClaims();
+		
+		deleteClaim(claim.getClaimNumber());
+		List<HolidayClaimDto> claimsAfter = getAllClaims();
+		
+		assertThat(claimsBefore).hasSameElementsAs(claimsAfter);
+	}
+	
+	@Test
+	void testSearchForApproval() throws Exception {
+		String paramName = "approved";
+		Boolean paramValue = true;
+		List<HolidayClaimDto> searchResultsForIsApprovedEqualsTrue = getAllClaims().stream()
+				.filter(c -> c.isApproved() == paramValue).collect(Collectors.toList());
+		
+		List<HolidayClaimDto> queryResults = searchForIsApproved(paramName, paramValue);
+		
+		assertThat(searchResultsForIsApprovedEqualsTrue).hasSameElementsAs(queryResults);		
+	}
+	
+	@Test
+	void testSearchForClaimant() throws Exception {
+		String paramName = "claimant";
+		String paramValue = "Magy";
+		List<HolidayClaimDto> searchResultsForIsApprovedEqualsTrue = getAllClaims().stream()
+				.filter(c -> c.getClaimant().startsWith(paramValue)).collect(Collectors.toList());
+		
+		List<HolidayClaimDto> queryResults = searchForClaimant(paramName, paramValue);
+		
+		assertThat(searchResultsForIsApprovedEqualsTrue).hasSameElementsAs(queryResults);		
+	}
+
+	private List<HolidayClaimDto> searchForClaimant(String paramName, String paramValue) {
+		return webTestClient
+				.get()
+				.uri(uriBuilder ->
+						uriBuilder
+						.path(BASE_URI + "/search")
+						.queryParam(paramName, paramValue)
+						.build())
+				.exchange()
+				.expectStatus().isOk()
+				.expectBodyList(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
+
+	private List<HolidayClaimDto> searchForIsApproved(String paramName, Boolean paramValue) {
+		return webTestClient
+				.get()
+				.uri(uriBuilder ->
+						uriBuilder
+						.path(BASE_URI + "/search")
+						.queryParam(paramName, paramValue)
+						.build())
+				.exchange()
+				.expectStatus().isOk()
+				.expectBodyList(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
 	}
 
 	private void deleteClaim(Long claimNumber) {

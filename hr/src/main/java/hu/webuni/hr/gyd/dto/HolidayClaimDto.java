@@ -33,7 +33,7 @@ public class HolidayClaimDto {
 		return claimant;
 	}
 
-	public void setClaimant(String claimant) {
+	public void setClaimant(String claimant) {		
 		this.claimant = claimant;
 	}
 
@@ -42,6 +42,10 @@ public class HolidayClaimDto {
 	}
 
 	public void setPrincipal(String principal) {
+		if(principal == null) {
+			this.principal = null;
+			this.setApproved(false);
+		}
 		this.principal = principal;
 	}
 
