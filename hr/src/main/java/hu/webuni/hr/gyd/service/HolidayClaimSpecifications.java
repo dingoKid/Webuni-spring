@@ -2,6 +2,8 @@ package hu.webuni.hr.gyd.service;
 
 import java.time.LocalDate;
 
+import javax.persistence.criteria.Predicate;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import hu.webuni.hr.gyd.model.Employee;
@@ -24,8 +26,13 @@ public class HolidayClaimSpecifications {
 		return (root, cq, cb) -> cb.between(root.get(HolidayClaim_.timeOfApplication), startOfApplication, endOfApplication);
 	}
 
-	public static Specification<HolidayClaim> hasStartAndEndOfApplicationHoliday(LocalDate start, LocalDate ending) {
-		return (root, cq, cb) -> cb.between(root.get(HolidayClaim_.start), start, ending);
+	public static Specification<HolidayClaim> hasStartAndEndOfHoliday(LocalDate start, LocalDate ending) {
+		return (root, cq, cb) -> {
+			Predicate first = cb.lessThanOrEqualTo(root.get(HolidayClaim_.start), ending);
+			Predicate second = cb.greaterThanOrEqualTo(root.get(HolidayClaim_.ending), start);
+			Predicate intervalsOverlap = cb.and(first, second);
+			return intervalsOverlap;
+		};
 	}
 
 	public static Specification<HolidayClaim> hasApproval(Boolean isApproved) {

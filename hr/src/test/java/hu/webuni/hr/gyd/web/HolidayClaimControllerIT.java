@@ -110,7 +110,20 @@ private static final String BASE_URI = "/api/holidays";
 	}
 	
 	@Test
-	void testThatClaimIsDeletedWhenNotApproved() throws Exception {
+	void testThatClaimIsNotModifiedIfApproved() throws Exception {
+		Long employeeId = 1L;
+		HolidayClaimDto oldClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 3, 5));
+		oldClaim = createClaim(oldClaim, employeeId);
+		oldClaim = approveClaim(oldClaim.getClaimNumber(), 2L);
+		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+		
+		HolidayClaimDto modifiedClaim = modifyClaim(oldClaim.getClaimNumber(), newClaim);
+		
+		assertThat(oldClaim).usingRecursiveComparison().isEqualTo(modifiedClaim);
+	}
+	
+	@Test
+	void testThatClaimIsDeletedIfNotApproved() throws Exception {
 		HolidayClaimDto claim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
 		claim = createClaim(claim, 1L);
 		claim.setPrincipal(null);
@@ -125,7 +138,7 @@ private static final String BASE_URI = "/api/holidays";
 	}
 	
 	@Test
-	void testThatClaimIsNotDeletedWhenApproved() throws Exception {
+	void testThatClaimIsNotDeletedIfApproved() throws Exception {
 		HolidayClaimDto claim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
 		claim = createClaim(claim, 1L);
 		claim = approveClaim(claim.getClaimNumber(), 2L);		
@@ -151,15 +164,75 @@ private static final String BASE_URI = "/api/holidays";
 	}
 	
 	@Test
-	void testSearchForClaimant() throws Exception {
+	void testSearchForClaimantNamePartlyMatched() throws Exception {
 		String paramName = "claimant";
 		String paramValue = "Magy";
-		List<HolidayClaimDto> searchResultsForIsApprovedEqualsTrue = getAllClaims().stream()
+		List<HolidayClaimDto> searchResultsForClaimantName = getAllClaims().stream()
 				.filter(c -> c.getClaimant().startsWith(paramValue)).collect(Collectors.toList());
 		
 		List<HolidayClaimDto> queryResults = searchForClaimant(paramName, paramValue);
 		
-		assertThat(searchResultsForIsApprovedEqualsTrue).hasSameElementsAs(queryResults);		
+		assertThat(searchResultsForClaimantName).hasSameElementsAs(queryResults);		
+	}
+	
+	@Test
+	void testSearchForClaimantNameIgnoringCase() throws Exception {
+		String paramName = "claimant";
+		String paramValue = "mAgYaR";
+		String searchString = "Magyar";
+		List<HolidayClaimDto> searchResultsForClaimantName = getAllClaims().stream()
+				.filter(c -> c.getClaimant().startsWith(searchString))
+				.collect(Collectors.toList());
+		
+		List<HolidayClaimDto> queryResults = searchForClaimant(paramName, paramValue);
+		
+		assertThat(searchResultsForClaimantName).hasSameElementsAs(queryResults);		
+	}
+	
+	@Test
+	void testSearchForApplicationDate() throws Exception {
+		String param1Name = "applicationStart";
+		String param2Name = "applicationEnd";
+		String param1Value = "2020-02-10";
+		String param2Value = "2020-03-26";
+		List<HolidayClaimDto> searchResultsForApplicationDate = getAllClaims().stream()
+				.filter(c -> c.getTimeOfApplication().isAfter(LocalDate.of(2020, 2, 10)) && c.getTimeOfApplication().isBefore(LocalDate.of(2020, 3, 26)))
+				.collect(Collectors.toList());
+		
+		List<HolidayClaimDto> queryResults = searchForDates(param1Name, param1Value, param2Name, param2Value);
+		assertThat(searchResultsForApplicationDate).hasSameElementsAs(queryResults);
+	}
+	
+	@Test
+	void testSearchForHolidayDate() throws Exception {
+		String param1Name = "holidayStart";
+		String param2Name = "holidayEnd";
+		String param1Value = "2020-02-10";
+		String param2Value = "2020-04-10";
+		List<HolidayClaimDto> searchResultsForApplicationDate = getAllClaims().stream()
+				.filter(c -> c.getStart().isBefore(LocalDate.of(2020, 4, 10)) || c.getStart().isEqual(LocalDate.of(2020, 4, 10)) 
+						&& LocalDate.of(2020, 2, 10).isBefore(c.getEnding()) || LocalDate.of(2020, 2, 10).isEqual(c.getEnding()))
+				.collect(Collectors.toList());
+		
+		List<HolidayClaimDto> queryResults = searchForDates(param1Name, param1Value, param2Name, param2Value);
+		assertThat(searchResultsForApplicationDate).hasSameElementsAs(queryResults);
+	}
+
+	private List<HolidayClaimDto> searchForDates(String param1Name, String param1Value, String param2Name,
+			String param2Value) {
+		return webTestClient
+				.get()
+				.uri(uriBuilder ->
+					uriBuilder
+					.path(BASE_URI + "/search")
+					.queryParam(param1Name, param1Value)
+					.queryParam(param2Name, param2Value)
+					.build())
+				.exchange()
+				.expectStatus().isOk()
+				.expectBodyList(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
 	}
 
 	private List<HolidayClaimDto> searchForClaimant(String paramName, String paramValue) {

@@ -92,7 +92,7 @@ public class InitDbService {
 		
 		HolidayClaim hc1 = new HolidayClaim(e1, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
 		hc1.setPrincipal(e12);
-		hc1.setApproved(true);		
+		hc1.setApproved(true);
 		HolidayClaim hc2 = new HolidayClaim(e2, LocalDate.of(2020, 2, 15), LocalDate.of(2020, 4, 10), LocalDate.of(2020, 4, 25));
 		HolidayClaim hc3 = new HolidayClaim(e3, LocalDate.of(2020, 3, 25), LocalDate.of(2020, 3, 26), LocalDate.of(2020, 3, 28));
 		hc3.setPrincipal(e12);

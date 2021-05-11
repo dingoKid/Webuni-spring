@@ -97,7 +97,7 @@ public class HolidayClaimService {
 		}
 		
 		if(start != null) {
-			spec = spec.and(HolidayClaimSpecifications.hasStartAndEndOfApplicationHoliday(start, ending));
+			spec = spec.and(HolidayClaimSpecifications.hasStartAndEndOfHoliday(start, ending));
 		}
 		
 		if(isApproved != null) {

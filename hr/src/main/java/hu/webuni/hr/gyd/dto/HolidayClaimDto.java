@@ -46,7 +46,10 @@ public class HolidayClaimDto {
 			this.principal = null;
 			this.setApproved(false);
 		}
-		this.principal = principal;
+		else {
+			this.principal = principal;
+			this.setApproved(true);
+		}
 	}
 
 	public LocalDate getTimeOfApplication() {
