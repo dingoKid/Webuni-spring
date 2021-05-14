@@ -37,7 +37,7 @@ public class HolidayClaimService {
 
 	@Transactional
 	public HolidayClaim createClaim(HolidayClaim holidayClaim, Long employeeId) {
-		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException());
+		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found with id: " + employeeId));
 		holidayClaim.setClaimant(claimant);
 		holidayClaim.setPrincipal(null);		
 		holidayClaim = claimRepository.save(holidayClaim);
@@ -46,9 +46,9 @@ public class HolidayClaimService {
 	
 	@Transactional
 	public HolidayClaim approveClaim(Long claimId, Long principalId) {
-		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
+		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() == null) {
-			Employee principal = employeeRepository.findById(principalId).orElseThrow(() -> new NoSuchElementException());
+			Employee principal = employeeRepository.findById(principalId).orElseThrow(() -> new NoSuchElementException("No employee found with id: " + principalId));
 			claim.setPrincipal(principal);			
 		}		
 		return claim;
@@ -56,7 +56,7 @@ public class HolidayClaimService {
 
 	@Transactional
 	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long claimId) {
-		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
+		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() == null) {
 			claim.setStart(newClaim.getStart());
 			claim.setEnding(newClaim.getEnding());
@@ -67,7 +67,7 @@ public class HolidayClaimService {
 
 	@Transactional
 	public void deleteClaim(Long claimId) {
-		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException());
+		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() == null) {
 			claimRepository.deleteById(claimId);
 		}

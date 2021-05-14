@@ -1,7 +1,9 @@
 package hu.webuni.hr.gyd.model;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +19,7 @@ public class Employee {
 	private Long employeeId;
 	private String name;
 	
-	@ManyToOne//(fetch = FetchType.LAZY)
+	@ManyToOne
 	private Position position;
 	
 	private int salary;
@@ -25,6 +27,15 @@ public class Employee {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Company company;
+	
+	@ManyToOne
+	private Employee principal;
+	
+	private String username;
+	private String password;
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<String> roles;
 	
 
 	public Employee() {}	
@@ -41,8 +52,6 @@ public class Employee {
 		this.company = company;
 	}
 
-
-
 	public Employee(String name, Position position, int salary, LocalDateTime hiringDate, Company company) {
 		this.name = name;
 		this.position = position;
@@ -50,6 +59,46 @@ public class Employee {
 		this.hiringDate = hiringDate;
 		this.company = company;
 	}
+	
+	public Set<String> getRoles() {
+		return roles;
+	}
+
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
+	}
+
+
+	public Employee getPrincipal() {
+		return principal;
+	}
+
+
+	public void setPrincipal(Employee principal) {
+		this.principal = principal;
+	}
+
+
+	public String getUsername() {
+		return username;
+	}
+
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+
+	public String getPassword() {
+		return password;
+	}
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 
 	public Long getEmployeeId() {
 		return employeeId;
@@ -99,7 +148,33 @@ public class Employee {
 		this.company = company;
 	}
 
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((employeeId == null) ? 0 : employeeId.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		if (employeeId == null) {
+			if (other.employeeId != null)
+				return false;
+		} else if (!employeeId.equals(other.employeeId))
+			return false;
+		return true;
+	}
+
+
 	@Override
 	public String toString() {
 		return "Employee [EmployeeId=" + employeeId + ", name=" + name + ", position=" + position + ", salary=" + salary

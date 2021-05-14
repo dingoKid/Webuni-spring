@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.gyd.dto.HolidayClaimDto;
 import hu.webuni.hr.gyd.mapper.HolidayClaimMapper;
@@ -42,41 +40,41 @@ public class HolidayClaimController {
 	}
 	
 	@PostMapping("/{employeeId}")
-	public HolidayClaimDto createClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long employeeId) {
+	public HolidayClaimDto createClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long employeeId) throws NoSuchElementException {
 		HolidayClaim holidayClaim = holidayClaimMapper.dtoToClaim(claim);
-		try {
+//		try {
 			return holidayClaimMapper.claimToDto(holidayClaimService.createClaim(holidayClaim, employeeId));
-		} catch (NoSuchElementException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND); 
-		}
+//		} catch (NoSuchElementException e) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND); 
+//		}
 	}
 	
 	@GetMapping("/approve/{claimId}/{principalId}")
-	public HolidayClaimDto approveClaim(@PathVariable Long claimId, @PathVariable Long principalId) {
-		try {
+	public HolidayClaimDto approveClaim(@PathVariable Long claimId, @PathVariable Long principalId) throws NoSuchElementException {
+//		try {
 			return holidayClaimMapper.claimToDto(holidayClaimService.approveClaim(claimId, principalId));
-		} catch (NoSuchElementException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
+//		} catch (NoSuchElementException e) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//		}
 	}
 	
 	@PutMapping("/modify/{claimId}")
-	public HolidayClaimDto modifyClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long claimId) {
+	public HolidayClaimDto modifyClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long claimId) throws NoSuchElementException {
 		HolidayClaim holidayClaim = holidayClaimMapper.dtoToClaim(claim);
-		try {
+//		try {
 			return holidayClaimMapper.claimToDto(holidayClaimService.modifyClaim(holidayClaim, claimId));
-		} catch (NoSuchElementException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
+//		} catch (NoSuchElementException e) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//		}
 	}
 	
 	@DeleteMapping("/delete/{claimId}")
 	public void deleteClaim(@PathVariable Long claimId) {
-		try {
+//		try {
 			holidayClaimService.deleteClaim(claimId);
-		} catch (NoSuchElementException e) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
+//		} catch (NoSuchElementException e) {
+//			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//		}
 	}
 	
 	@GetMapping("/search")
