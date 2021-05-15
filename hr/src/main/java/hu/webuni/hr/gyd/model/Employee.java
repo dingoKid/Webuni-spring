@@ -1,9 +1,7 @@
 package hu.webuni.hr.gyd.model;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -34,10 +32,6 @@ public class Employee {
 	private String username;
 	private String password;
 	
-	@ElementCollection(fetch = FetchType.EAGER)
-	private Set<String> roles;
-	
-
 	public Employee() {}	
 	
 	
@@ -59,16 +53,6 @@ public class Employee {
 		this.hiringDate = hiringDate;
 		this.company = company;
 	}
-	
-	public Set<String> getRoles() {
-		return roles;
-	}
-
-
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
-	}
-
 
 	public Employee getPrincipal() {
 		return principal;
