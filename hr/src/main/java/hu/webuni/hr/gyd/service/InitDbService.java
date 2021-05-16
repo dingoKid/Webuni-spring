@@ -124,6 +124,7 @@ public class InitDbService {
 		e11.setPrincipal(e6);
 		e12.setPrincipal(e6);
 		
+		employeeRepository.saveAll(List.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12));
 		
 		HolidayClaim hc1 = new HolidayClaim(e1, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
 		hc1.setPrincipal(e12);
