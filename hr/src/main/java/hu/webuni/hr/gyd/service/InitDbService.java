@@ -127,23 +127,33 @@ public class InitDbService {
 		employeeRepository.saveAll(List.of(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12));
 		
 		HolidayClaim hc1 = new HolidayClaim(e1, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
-		hc1.setPrincipal(e12);
-		hc1.setApproved(true);
+		hc1.setPrincipal(e2);
+		hc1.setIsApproved(true);
 		HolidayClaim hc2 = new HolidayClaim(e2, LocalDate.of(2020, 2, 15), LocalDate.of(2020, 4, 10), LocalDate.of(2020, 4, 25));
 		HolidayClaim hc3 = new HolidayClaim(e3, LocalDate.of(2020, 3, 25), LocalDate.of(2020, 3, 26), LocalDate.of(2020, 3, 28));
-		hc3.setPrincipal(e12);
-		hc3.setApproved(true);
+		hc3.setPrincipal(e5);
+		hc3.setIsApproved(true);
 		HolidayClaim hc4 = new HolidayClaim(e5, LocalDate.of(2020, 1, 5), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 2, 15));
-		hc4.setPrincipal(e12);
-		hc4.setApproved(true);		
+		hc4.setPrincipal(e5);
+		hc4.setIsApproved(true);		
 		HolidayClaim hc5 = new HolidayClaim(e6, LocalDate.of(2020, 11, 5), LocalDate.of(2020, 12, 10), LocalDate.of(2020, 12, 15));
 		
 		holidayClaimRepository.saveAll(List.of(hc1, hc2, hc3, hc4, hc5));
 		
 		HrUser hu1 = new HrUser("kiss1", passwordEncoder.encode("pass"), Set.of("user"));
 		HrUser hu2 = new HrUser("nagy1", passwordEncoder.encode("pass"), Set.of("admin", "user"));
+		HrUser hu3 = new HrUser("szabo1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu4 = new HrUser("nemeth1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu5 = new HrUser("magyar1", passwordEncoder.encode("pass"), Set.of("admin", "user"));
+		HrUser hu6 = new HrUser("magyar1", passwordEncoder.encode("pass"), Set.of("admin", "user"));
+		HrUser hu7 = new HrUser("horvath1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu8 = new HrUser("kovacs1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu9 = new HrUser("marton1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu10 = new HrUser("adam1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu11 = new HrUser("gajdos1", passwordEncoder.encode("pass"), Set.of("user"));
+		HrUser hu12 = new HrUser("zoltan1", passwordEncoder.encode("pass"), Set.of("user"));
 		
-		userRepository.saveAll(List.of(hu1, hu2));
+		userRepository.saveAll(List.of(hu1, hu2, hu3, hu4, hu5, hu6, hu7, hu8, hu9, hu10, hu11, hu12));
 		
 	}
 }

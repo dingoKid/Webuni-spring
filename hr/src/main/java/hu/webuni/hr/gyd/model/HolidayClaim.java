@@ -20,7 +20,7 @@ public class HolidayClaim {
 	
 	@ManyToOne
 	private Employee principal;
-//	
+	
 	private LocalDate timeOfApplication;
 	private LocalDate start;
 	private LocalDate ending;
@@ -64,7 +64,14 @@ public class HolidayClaim {
 
 
 	public void setPrincipal(Employee principal) {
-		this.principal = principal;
+		if(principal == null) {
+			this.principal = null;
+			this.setIsApproved(false);
+		}
+		else {
+			this.principal = principal;
+			this.setIsApproved(true);
+		}
 	}
 
 
@@ -98,15 +105,14 @@ public class HolidayClaim {
 	}
 
 
-	public Boolean isApproved() {
+	public Boolean getIsApproved() {
 		return this.principal == null ? false : true;
 	}
 
 
-	public void setApproved(Boolean isApproved) {
+	public void setIsApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
-
 	
 	
 }

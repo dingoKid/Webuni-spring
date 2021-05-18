@@ -27,9 +27,7 @@ public class HrUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		HrUser user = userRepository.findById(username).orElseThrow( () -> new UsernameNotFoundException(username) );
-		System.out.println(user.getUsername());
 		Employee employee = employeeRepository.findByUsername(username).orElseThrow( () -> new UsernameNotFoundException(username) );
-		System.out.println(user.getUsername());
 		return new HrUserDetails(username, user.getPassword(), 
 				user.getRoles().stream()
 				.map(SimpleGrantedAuthority::new)

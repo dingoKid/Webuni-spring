@@ -3,17 +3,25 @@ package hu.webuni.hr.gyd.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.gyd.dto.HolidayClaimDto;
+import hu.webuni.hr.gyd.model.Employee;
+import hu.webuni.hr.gyd.model.HrUser;
+import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.repository.HolidayClaimRepository;
+import hu.webuni.hr.gyd.repository.HrUserRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class HolidayClaimControllerIT {
@@ -26,6 +34,62 @@ private static final String BASE_URI = "/api/holidays";
 	@Autowired
 	HolidayClaimRepository claimRepository;
 	
+	@Autowired
+	HrUserRepository userRepository;
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+    private TestRestTemplate template;
+	
+	@BeforeEach
+	private void clearUsers() {
+		userRepository.deleteAll();
+	}
+	
+	@Test
+	void testThatClaimIsAdded() throws Exception {
+		String username = "user1";
+		String password = "pass";
+		
+		HrUser hu1 = new HrUser(username, passwordEncoder.encode(password), null);
+		userRepository.save(hu1);	
+		
+		Employee employee = new Employee();
+		employee.setUsername(username);
+		employeeRepository.save(employee);
+		
+		List<HolidayClaimDto> claimsBefore = getAllClaimsWithAuth(username, password);
+		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
+
+		newClaim = createClaimWithAuth(newClaim, username, password);
+		List<HolidayClaimDto> claimsAfter = getAllClaimsWithAuth(username, password);
+
+		claimsAfter.removeAll(claimsBefore);
+		assertThat(claimsAfter.get(0)).usingRecursiveComparison().isEqualTo(newClaim);		
+	}
+	
+	
+	private List<HolidayClaimDto> getAllClaimsWithAuth(String username, String password) {
+		
+		HolidayClaimDto[] claims = template.withBasicAuth(username, password)
+				.getForObject(BASE_URI, HolidayClaimDto[].class);
+		List<HolidayClaimDto> result = new ArrayList<>();
+		Collections.addAll(result, claims);
+		return result;
+	}
+
+	private HolidayClaimDto createClaimWithAuth(HolidayClaimDto newClaim, String username, String password) {
+		return template.withBasicAuth(username, password)
+				.postForObject(BASE_URI, newClaim, HolidayClaimDto.class);
+	}
+
+
+	/*
 	@Test
 	void testThatClaimIsAdded() throws Exception {
 		List<HolidayClaimDto> claimsBefore = getAllClaims();
@@ -353,6 +417,6 @@ private static final String BASE_URI = "/api/holidays";
 				.returnResult()
 				.getResponseBody();
 	}
-	
+*/	
 
 }

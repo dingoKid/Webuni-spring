@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.HolidayClaim;
 import hu.webuni.hr.gyd.model.HolidayClaimSearch;
+import hu.webuni.hr.gyd.model.HrUserDetails;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.repository.HolidayClaimRepository;
 
@@ -36,8 +38,9 @@ public class HolidayClaimService {
 	}
 
 	@Transactional
-	public HolidayClaim createClaim(HolidayClaim holidayClaim, Long employeeId) {
-		Employee claimant = employeeRepository.findById(employeeId).orElseThrow(() -> new NoSuchElementException("No employee found with id: " + employeeId));
+	public HolidayClaim createClaim(HolidayClaim holidayClaim) {
+		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
+		Employee claimant = employeeRepository.findById(authenticatedUserId).get();
 		holidayClaim.setClaimant(claimant);
 		holidayClaim.setPrincipal(null);		
 		holidayClaim = claimRepository.save(holidayClaim);
@@ -45,19 +48,31 @@ public class HolidayClaimService {
 	}
 	
 	@Transactional
-	public HolidayClaim approveClaim(Long claimId, Long principalId) {
+	public HolidayClaim approveClaim(Long claimId) {
+		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
-		if(claim.getPrincipal() == null) {
-			Employee principal = employeeRepository.findById(principalId).orElseThrow(() -> new NoSuchElementException("No employee found with id: " + principalId));
-			claim.setPrincipal(principal);			
-		}		
+		if(claim.getPrincipal() != null) {
+			throw new ClaimAlreadyApprovedException("Claim is already approved");
+		}	
+		Long claimantPrincipalId = claim.getClaimant().getPrincipal().getEmployeeId();
+		if(claimantPrincipalId.equals(authenticatedUserId))
+		{
+			Employee principal = employeeRepository.findById(authenticatedUserId).get();
+			claim.setPrincipal(principal);
+		}
 		return claim;
 	}
 
 	@Transactional
 	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long claimId) {
+		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
-		if(claim.getPrincipal() == null) {
+		
+		if(claim.getPrincipal() != null) {
+			throw new ClaimAlreadyApprovedException("Approved claims can not be modified");
+		}
+		
+		if(claim.getClaimant().getEmployeeId() == authenticatedUserId) {
 			claim.setStart(newClaim.getStart());
 			claim.setEnding(newClaim.getEnding());
 			claim.setTimeOfApplication(newClaim.getTimeOfApplication());
@@ -66,16 +81,22 @@ public class HolidayClaimService {
 	}
 
 	@Transactional
-	public void deleteClaim(Long claimId) {
+	public Long deleteClaim(Long claimId) {
+		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
-		if(claim.getPrincipal() == null) {
+		if(claim.getPrincipal() != null) {
+			throw new ClaimAlreadyApprovedException("Approved claims can not be deleted");
+		}
+		if(claim.getClaimant().getEmployeeId() == authenticatedUserId) {
 			claimRepository.deleteById(claimId);
 		}
+		return claim.getClaimant().getEmployeeId();
 	}
 
 	public List<HolidayClaim> findByExample(HolidayClaimSearch example) {
-		Employee claimant = example.getClaimant();
-		Employee principal = example.getPrincipal();
+		String claimant = example.getClaimant();
+		String principal = example.getPrincipal();
+		
 		LocalDate startOfApplication = example.getStartOfApplication();
 		LocalDate endOfApplication = example.getEndOfApplication();
 		LocalDate start = example.getStart();
@@ -85,10 +106,16 @@ public class HolidayClaimService {
 		Specification<HolidayClaim> spec = Specification.where(null);
 		
 		if(claimant != null) {
+			employeeRepository.findByNameStartingWithIgnoreCase(claimant)
+			.orElseThrow(() -> new NoSuchElementException("No employee found with name: " + claimant));
+			
 			spec = spec.and(HolidayClaimSpecifications.hasClaimant(claimant));
 		}
 
 		if(principal != null) {
+			employeeRepository.findByNameStartingWithIgnoreCase(principal)
+			.orElseThrow(() -> new NoSuchElementException("No employee found with name: " + principal));
+			
 			spec = spec.and(HolidayClaimSpecifications.hasPrincipal(principal));
 		}
 		

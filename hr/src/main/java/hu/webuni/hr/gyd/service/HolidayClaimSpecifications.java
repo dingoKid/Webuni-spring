@@ -6,19 +6,18 @@ import javax.persistence.criteria.Predicate;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Employee_;
 import hu.webuni.hr.gyd.model.HolidayClaim;
 import hu.webuni.hr.gyd.model.HolidayClaim_;
 
 public class HolidayClaimSpecifications {
 
-	public static Specification<HolidayClaim> hasClaimant(Employee claimant) {
-		return (root, cq, cb) -> cb.like(cb.lower(root.get(HolidayClaim_.claimant).get(Employee_.name)), claimant.getName().toLowerCase() + "%");
+	public static Specification<HolidayClaim> hasClaimant(String claimant) {
+		return (root, cq, cb) -> cb.like(cb.lower(root.get(HolidayClaim_.claimant).get(Employee_.name)), claimant.toLowerCase() + "%");
 	}
 
-	public static Specification<HolidayClaim> hasPrincipal(Employee principal) {
-		return (root, cq, cb) -> cb.like(cb.lower(root.get(HolidayClaim_.principal).get(Employee_.name)), principal.getName().toLowerCase() + "%");
+	public static Specification<HolidayClaim> hasPrincipal(String principal) {
+		return (root, cq, cb) -> cb.like(cb.lower(root.get(HolidayClaim_.principal).get(Employee_.name)), principal.toLowerCase() + "%");
 	}
 
 	public static Specification<HolidayClaim> hasStartAndEndOfApplication(LocalDate startOfApplication,

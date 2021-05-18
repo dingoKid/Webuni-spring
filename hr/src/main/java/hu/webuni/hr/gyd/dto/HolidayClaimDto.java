@@ -2,11 +2,21 @@ package hu.webuni.hr.gyd.dto;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class HolidayClaimDto {
 	
 	private Long claimNumber;
 	private String claimant;
+	
+	@JsonIgnore
+	private Long claimantId;
+	
 	private String principal;
+	
+	@JsonIgnore
+	private Long principalId;
+	
 	private LocalDate timeOfApplication;
 	private LocalDate start;
 	private LocalDate ending;
@@ -19,6 +29,29 @@ public class HolidayClaimDto {
 		this.start = start;
 		this.ending = ending;
 		isApproved = false;
+	}
+
+	public HolidayClaimDto(LocalDate start, LocalDate ending) {
+		this.timeOfApplication = LocalDate.now();
+		this.start = start;
+		this.ending = ending;
+		isApproved = false;
+	}
+	
+	public Long getPrincipalId() {
+		return principalId;
+	}
+
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
+	}
+
+	public Long getClaimantId() {
+		return claimantId;
+	}
+
+	public void setClaimantId(Long claimantId) {
+		this.claimantId = claimantId;
 	}
 
 	public Long getClaimNumber() {
@@ -44,11 +77,11 @@ public class HolidayClaimDto {
 	public void setPrincipal(String principal) {
 		if(principal == null) {
 			this.principal = null;
-			this.setApproved(false);
+			this.setIsApproved(false);
 		}
 		else {
 			this.principal = principal;
-			this.setApproved(true);
+			this.setIsApproved(true);
 		}
 	}
 
@@ -80,7 +113,7 @@ public class HolidayClaimDto {
 		return isApproved;
 	}
 
-	public void setApproved(Boolean isApproved) {
+	public void setIsApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
 

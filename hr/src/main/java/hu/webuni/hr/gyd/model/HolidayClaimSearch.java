@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 public class HolidayClaimSearch {
 	
-	private Employee claimant;
-	private Employee principal;
+	private String claimant;
+	private String principal;
 	private LocalDate startOfApplication;
 	private LocalDate endOfApplication;
 	private LocalDate start;
@@ -30,19 +30,19 @@ public class HolidayClaimSearch {
 		this.endOfApplication = endOfApplication;
 	}
 
-	public Employee getClaimant() {
+	public String getClaimant() {
 		return claimant;
 	}
 
-	public void setClaimant(Employee claimant) {
+	public void setClaimant(String claimant) {
 		this.claimant = claimant;
 	}
 
-	public Employee getPrincipal() {
+	public String getPrincipal() {
 		return principal;
 	}
 
-	public void setPrincipal(Employee principal) {
+	public void setPrincipal(String principal) {
 		this.principal = principal;
 	}
 
@@ -69,7 +69,5 @@ public class HolidayClaimSearch {
 	public void setApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
-	
-	
 
 }

@@ -121,7 +121,7 @@ public class EmployeeController {
 	
 	@GetMapping(params = "name")
 	public List<EmployeeDto> getByName(@RequestParam String name) {
-		return mapper.employeesToDtos(employeeRepository.findByNameStartingWithIgnoreCase(name));
+		return mapper.employeesToDtos(employeeRepository.findByNameStartingWithIgnoreCase(name).get());
 	}
 	
 	@GetMapping(params = {"start", "end"})

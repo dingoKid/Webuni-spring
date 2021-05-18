@@ -20,7 +20,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	//@Query("select e from Employee e where e.position = ?1")
 	Page<Employee> findByPosition(Position position, Pageable pageable);
 	
-	List<Employee> findByNameStartingWithIgnoreCase(String name);
+	Optional<List<Employee>> findByNameStartingWithIgnoreCase(String name);
 	
 	List<Employee> findByHiringDateBetween(LocalDateTime start, LocalDateTime end);
 	
