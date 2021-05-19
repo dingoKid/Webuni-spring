@@ -1,8 +1,8 @@
-package hu.webuni.hr.gyd.model;
+package hu.webuni.hr.gyd.dto;
 
 import java.time.LocalDate;
 
-public class HolidayClaimSearch {
+public class HolidayClaimSearchDto {
 	
 	private String claimant;
 	private String principal;
@@ -12,7 +12,7 @@ public class HolidayClaimSearch {
 	private LocalDate ending;
 	private Boolean isApproved;
 	
-	public HolidayClaimSearch() {}
+	public HolidayClaimSearchDto() {}
 
 	public LocalDate getStartOfApplication() {
 		return startOfApplication;

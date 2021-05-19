@@ -3,6 +3,7 @@ package hu.webuni.hr.gyd.service;
 import java.util.List;
 import java.util.Optional;
 
+import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.model.Employee;
 
 public interface EmployeeService {
@@ -23,6 +24,6 @@ public interface EmployeeService {
 	
 	public void deleteEmployee(long id);
 	
-	public List<Employee> findEmployeesByExample(Employee example);
+	public List<Employee> findEmployeesByExample(EmployeeDto example);
 	
 }

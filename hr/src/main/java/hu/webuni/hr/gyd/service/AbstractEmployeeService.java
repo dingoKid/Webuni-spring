@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import hu.webuni.hr.gyd.model.Company;
+import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
@@ -73,14 +73,13 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 			throw new NoSuchElementException();
 	}
 	
-	public List<Employee> findEmployeesByExample(Employee example) {
+	public List<Employee> findEmployeesByExample(EmployeeDto example) {
 		Long id = example.getEmployeeId();
 		String name = example.getName();
-		Position position = example.getPosition();
+		String position = example.getPosition();
 		Integer salary = example.getSalary();
 		LocalDateTime hiringDate = example.getHiringDate();
-		
-		Company company = example.getCompany();
+		String company = example.getCompany();
 		
 		Specification<Employee> spec = Specification.where(null);
 		
@@ -93,7 +92,7 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		}
 		
 		if(position != null) {
-			spec = spec.and(EmployeeSpecifications.hasPosition(position.getName()));
+			spec = spec.and(EmployeeSpecifications.hasPosition(position));
 		}
 		
 		if(salary > 0) {
@@ -105,10 +104,49 @@ public abstract class AbstractEmployeeService implements EmployeeService {
 		}
 		
 		if(company != null) {
-			spec = spec.and(EmployeeSpecifications.hasCompany(company.getName()));
+			spec = spec.and(EmployeeSpecifications.hasCompany(company));
 		}
 		
 		return employeeRepository.findAll(spec, Sort.by("name"));
+		
 	}
+	
+//	public List<Employee> findEmployeesByExample(Employee example) {
+//		Long id = example.getEmployeeId();
+//		String name = example.getName();
+//		Position position = example.getPosition();
+//		Integer salary = example.getSalary();
+//		LocalDateTime hiringDate = example.getHiringDate();
+//		
+//		Company company = example.getCompany();
+//		
+//		Specification<Employee> spec = Specification.where(null);
+//		
+//		if(id != null) {
+//			spec = spec.and(EmployeeSpecifications.hasId(id));
+//		}
+//		
+//		if(StringUtils.hasText(name)) {
+//			spec = spec.and(EmployeeSpecifications.hasName(name));
+//		}
+//		
+//		if(position != null) {
+//			spec = spec.and(EmployeeSpecifications.hasPosition(position.getName()));
+//		}
+//		
+//		if(salary > 0) {
+//			spec = spec.and(EmployeeSpecifications.hasSalary(salary));
+//		}
+//		
+//		if(hiringDate != null) {
+//			spec = spec.and(EmployeeSpecifications.hasHiringDate(hiringDate));
+//		}
+//		
+//		if(company != null) {
+//			spec = spec.and(EmployeeSpecifications.hasCompany(company.getName()));
+//		}
+//		
+//		return employeeRepository.findAll(spec, Sort.by("name"));
+//	}
 	
 }

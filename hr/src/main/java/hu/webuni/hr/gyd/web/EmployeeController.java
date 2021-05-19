@@ -24,7 +24,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
 import hu.webuni.hr.gyd.mapper.EmployeeMapper;
-import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
 import hu.webuni.hr.gyd.repository.CompanyRepository;
@@ -138,42 +137,9 @@ public class EmployeeController {
 		}
 	}
 	
-	@GetMapping(path = "/search")
-	public List<EmployeeDto> searchEmployees(@RequestParam(required = false) Long employeeid,
-											@RequestParam(required = false) String name,
-											@RequestParam(required = false) String position,
-											@RequestParam(required = false) Integer salary,
-											@RequestParam(required = false) LocalDateTime hiringdate,
-											@RequestParam(required = false) String companyname) {
-		Employee example = new Employee();
-		
-		if(position != null) {
-			example.setPosition(new Position());
-			example.getPosition().setName(position);
-		}
-		
-		if(companyname != null) {
-			example.setCompany(new Company());
-			example.getCompany().setName(companyname);
-		}
-		
-		if(salary == null)
-			example.setSalary(0);
-		else
-			example.setSalary(salary);
-		
-		example.setEmployeeId(employeeid);
-		example.setName(name);		
-		example.setHiringDate(hiringdate);
+	@PostMapping("/search")
+	public List<EmployeeDto> searchEmloyees(@RequestBody EmployeeDto example) {
 		return mapper.employeesToDtos(employeeService.findEmployeesByExample(example));
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

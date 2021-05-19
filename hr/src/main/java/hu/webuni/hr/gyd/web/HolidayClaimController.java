@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.webuni.hr.gyd.dto.HolidayClaimDto;
+import hu.webuni.hr.gyd.dto.HolidayClaimSearchDto;
 import hu.webuni.hr.gyd.mapper.HolidayClaimMapper;
 import hu.webuni.hr.gyd.model.HolidayClaim;
-import hu.webuni.hr.gyd.model.HolidayClaimSearch;
 import hu.webuni.hr.gyd.service.HolidayClaimService;
 
 @RestController
@@ -63,7 +63,7 @@ public class HolidayClaimController {
 	}
 	
 	@PostMapping("/search")
-	public List<HolidayClaimDto> searchClaims(@RequestBody HolidayClaimSearch example) {
+	public List<HolidayClaimDto> searchClaims(@RequestBody HolidayClaimSearchDto example) {
 		
 		if(example.getStartOfApplication() != null && example.getEndOfApplication() == null)
 			example.setEndOfApplication(LocalDate.now());

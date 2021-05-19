@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import hu.webuni.hr.gyd.dto.EmployeeDto;
+import hu.webuni.hr.gyd.model.Company;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.Position;
 
@@ -21,12 +22,21 @@ public interface EmployeeMapper {
 		position.setName(positionName);
 		return position;
 	}
-		
+	
+	@Named("stringToCompany")
+	public static Company stringToCompany(String companyName) {
+		Company company = new Company();
+		company.setName(companyName);
+		return company;
+	}
+	
 	@Mapping(source = "position.name", target = "position")
+	@Mapping(source = "company.name", target = "company")
 	EmployeeDto employeeToDto(Employee employee);
 
 	@Mapping(source = "position", target = "position", qualifiedByName = "stringToPosition")
-	@Mapping(target = "company", ignore = true)
+	@Mapping(source = "company", target = "company", qualifiedByName = "stringToCompany")
+//	@Mapping(target = "company", ignore = true)
 	Employee DtoToEmployee(EmployeeDto employee);
 
 	List<Employee> DtosToEmployee(List<EmployeeDto> employees);

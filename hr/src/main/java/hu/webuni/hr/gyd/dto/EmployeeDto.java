@@ -8,7 +8,7 @@ import javax.validation.constraints.Positive;
 
 public class EmployeeDto {
 	
-	private Long EmployeeId;
+	private Long employeeId;
 	
 	@NotEmpty
 	private String name;
@@ -22,22 +22,33 @@ public class EmployeeDto {
 	@Past
 	private LocalDateTime hiringDate;
 	
+	private String company;
+	
 	public EmployeeDto() {}
 	
 	public EmployeeDto(Long employeeId, String name, String position, int salary, LocalDateTime hiringDate) {
-		EmployeeId = employeeId;
+		this.employeeId = employeeId;
 		this.name = name;
 		this.position = position;
 		this.salary = salary;
 		this.hiringDate = hiringDate;
 	}
+	
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
 
 	public Long getEmployeeId() {
-		return EmployeeId;
+		return employeeId;
 	}
 
 	public void setEmployeeId(Long employeeId) {
-		EmployeeId = employeeId;
+		this.employeeId = employeeId;
 	}
 
 	public String getName() {
@@ -74,7 +85,7 @@ public class EmployeeDto {
 
 	@Override
 	public String toString() {
-		return "Employee [EmployeeId=" + EmployeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
+		return "Employee [EmployeeId=" + employeeId + ", name=" + name + ", position=" + position + ", salary=" + salary
 				+ ", hiringDate=" + hiringDate + "]";
 	}
 	
@@ -83,7 +94,7 @@ public class EmployeeDto {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((EmployeeId == null) ? 0 : EmployeeId.hashCode());
+		result = prime * result + ((employeeId == null) ? 0 : employeeId.hashCode());
 		return result;
 	}
 
@@ -96,10 +107,10 @@ public class EmployeeDto {
 		if (getClass() != obj.getClass())
 			return false;
 		EmployeeDto other = (EmployeeDto) obj;
-		if (EmployeeId == null) {
-			if (other.EmployeeId != null)
+		if (employeeId == null) {
+			if (other.employeeId != null)
 				return false;
-		} else if (!EmployeeId.equals(other.EmployeeId))
+		} else if (!employeeId.equals(other.employeeId))
 			return false;
 		return true;
 	}

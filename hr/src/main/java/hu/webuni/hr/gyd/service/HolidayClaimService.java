@@ -13,9 +13,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import hu.webuni.hr.gyd.dto.HolidayClaimSearchDto;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.HolidayClaim;
-import hu.webuni.hr.gyd.model.HolidayClaimSearch;
 import hu.webuni.hr.gyd.model.HrUserDetails;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.repository.HolidayClaimRepository;
@@ -93,7 +93,7 @@ public class HolidayClaimService {
 		return claim.getClaimant().getEmployeeId();
 	}
 
-	public List<HolidayClaim> findByExample(HolidayClaimSearch example) {
+	public List<HolidayClaim> findByExample(HolidayClaimSearchDto example) {
 		String claimant = example.getClaimant();
 		String principal = example.getPrincipal();
 		
