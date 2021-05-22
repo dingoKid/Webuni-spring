@@ -18,7 +18,6 @@ public class HrUserDetails extends User {
 
 	public HrUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, authorities);
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getEmployeeName() {

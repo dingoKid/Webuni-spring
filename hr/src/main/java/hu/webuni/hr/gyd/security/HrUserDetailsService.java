@@ -31,7 +31,7 @@ public class HrUserDetailsService implements UserDetailsService {
 		return new HrUserDetails(username, user.getPassword(), 
 				user.getRoles().stream()
 				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList()), employee);
+				.collect(Collectors.toList()));
 	}
 
 }

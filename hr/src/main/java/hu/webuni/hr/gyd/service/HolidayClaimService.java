@@ -39,17 +39,21 @@ public class HolidayClaimService {
 
 	@Transactional
 	public HolidayClaim createClaim(HolidayClaim holidayClaim) {
-		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
+		Long authenticatedUserId = getAuthorizedUserId();
 		Employee claimant = employeeRepository.findById(authenticatedUserId).get();
 		holidayClaim.setClaimant(claimant);
 		holidayClaim.setPrincipal(null);		
 		holidayClaim = claimRepository.save(holidayClaim);
 		return holidayClaim;
 	}
+
+	private Long getAuthorizedUserId() {
+		return ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployeeId();
+	}
 	
 	@Transactional
 	public HolidayClaim approveClaim(Long claimId) {
-		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
+		Long authenticatedUserId = getAuthorizedUserId();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() != null) {
 			throw new ClaimAlreadyApprovedException("Claim is already approved");
@@ -65,7 +69,7 @@ public class HolidayClaimService {
 
 	@Transactional
 	public HolidayClaim modifyClaim(HolidayClaim newClaim, Long claimId) {
-		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
+		Long authenticatedUserId = getAuthorizedUserId();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		
 		if(claim.getPrincipal() != null) {
@@ -82,7 +86,7 @@ public class HolidayClaimService {
 
 	@Transactional
 	public Long deleteClaim(Long claimId) {
-		Long authenticatedUserId = ((HrUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getEmployee().getEmployeeId();
+		Long authenticatedUserId = getAuthorizedUserId();
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() != null) {
 			throw new ClaimAlreadyApprovedException("Approved claims can not be deleted");
