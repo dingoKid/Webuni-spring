@@ -1,5 +1,6 @@
 package hu.webuni.hr.gyd.security;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,9 @@ public class HrUserDetailsService implements UserDetailsService {
 				.collect(Collectors.toList()));
 		userDetails.setEmployeeId(employee.getEmployeeId());
 		userDetails.setEmployeeName(employee.getName());
-//		userDetails.setPrincipal(employeeRepository.findPrincipalById(employee.getEmployeeId()));
+		userDetails.setPrincipal(employee.getPrincipal());
+		List<Employee> employees = employeeRepository.findByPrincipalId(employee.getEmployeeId());
+		userDetails.setEmployees(employees);
 		return userDetails;
 	}
 

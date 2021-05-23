@@ -44,20 +44,17 @@ public class HolidayClaimController {
 	}
 	
 	@PutMapping("/modify/{claimId}")
-	@PostAuthorize("returnObject.claimantId == authentication.principal.employee.employeeId")
 	public HolidayClaimDto modifyClaim(@RequestBody HolidayClaimDto claim, @PathVariable Long claimId) {
 		HolidayClaim holidayClaim = holidayClaimMapper.dtoToClaim(claim);
 			return holidayClaimMapper.claimToDto(holidayClaimService.modifyClaim(holidayClaim, claimId));
 	}
 	
 	@DeleteMapping("/delete/{claimId}")
-	@PostAuthorize("returnObject == authentication.principal.employee.employeeId")
 	public Long deleteClaim(@PathVariable Long claimId) {
 		return holidayClaimService.deleteClaim(claimId);
 	}
 	
 	@GetMapping("/approve/{claimId}")
-//	@PostAuthorize("returnObject.principalId == authentication.principal.principal.employeeId")
 	public HolidayClaimDto approveClaim(@PathVariable Long claimId) {
 		return holidayClaimMapper.claimToDto(holidayClaimService.approveClaim(claimId));
 	}

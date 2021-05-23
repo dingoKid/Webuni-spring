@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -54,20 +55,15 @@ public class HolidayClaimService {
 	@Transactional
 	public HolidayClaim approveClaim(Long claimId) {
 		Long authenticatedUserId = getAuthorizedUserId();
-		System.out.println("ID:" + authenticatedUserId);
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() != null) {
 			throw new ClaimAlreadyApprovedException("Claim is already approved");
 		}	
 		Long claimantPrincipalId = claim.getClaimant().getPrincipal().getEmployeeId();
-		System.out.println("PRID: " + claimantPrincipalId);
-		if(claimantPrincipalId.equals(authenticatedUserId))
-		{
-			Employee principal = employeeRepository.findById(authenticatedUserId).get();
-			System.out.println("PRUSERNAME:" + principal.getUsername());
-			claim.setPrincipal(principal);
-		}
-		System.out.println("CLAIM: " + claim);
+		if(!claimantPrincipalId.equals(authenticatedUserId)) throw new AccessDeniedException("Not authorized");	
+		
+		Employee principal = employeeRepository.findById(authenticatedUserId).get();
+		claim.setPrincipal(principal);
 		return claim;
 	}
 
@@ -80,11 +76,11 @@ public class HolidayClaimService {
 			throw new ClaimAlreadyApprovedException("Approved claims can not be modified");
 		}
 		
-		if(claim.getClaimant().getEmployeeId() == authenticatedUserId) {
-			claim.setStart(newClaim.getStart());
-			claim.setEnding(newClaim.getEnding());
-			claim.setTimeOfApplication(newClaim.getTimeOfApplication());
-		}
+		if(claim.getClaimant().getEmployeeId() != authenticatedUserId) throw new AccessDeniedException("Not authorized");
+		
+		claim.setStart(newClaim.getStart());
+		claim.setEnding(newClaim.getEnding());
+		claim.setTimeOfApplication(newClaim.getTimeOfApplication());
 		return claim;
 	}
 
@@ -95,9 +91,10 @@ public class HolidayClaimService {
 		if(claim.getPrincipal() != null) {
 			throw new ClaimAlreadyApprovedException("Approved claims can not be deleted");
 		}
-		if(claim.getClaimant().getEmployeeId() == authenticatedUserId) {
-			claimRepository.deleteById(claimId);
-		}
+		if(claim.getClaimant().getEmployeeId() != authenticatedUserId) throw new AccessDeniedException("Not authorized");
+			
+		
+		claimRepository.deleteById(claimId);		
 		return claim.getClaimant().getEmployeeId();
 	}
 
@@ -109,7 +106,7 @@ public class HolidayClaimService {
 		LocalDate endOfApplication = example.getEndOfApplication();
 		LocalDate start = example.getStart();
 		LocalDate ending = example.getEnding();
-		Boolean isApproved = example.isApproved();
+		Boolean isApproved = example.getIsApproved();
 		
 		Specification<HolidayClaim> spec = Specification.where(null);
 		

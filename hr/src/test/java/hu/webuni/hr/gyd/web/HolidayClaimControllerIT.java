@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.gyd.dto.HolidayClaimDto;
+import hu.webuni.hr.gyd.dto.HolidayClaimSearchDto;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.HrUser;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
@@ -63,6 +64,7 @@ private static final String BASE_URI = "/api/holidays";
 
 		Employee principal = new Employee();
 		principal.setUsername(principalUsername);
+		principal.setName("Kovacs");
 		principal = employeeRepository.save(principal);
 		
 		Employee user = employeeRepository.findByUsername(username).get();
@@ -87,18 +89,6 @@ private static final String BASE_URI = "/api/holidays";
 		assertThat(claimsAfter.get(0)).usingRecursiveComparison().isEqualTo(newClaim);		
 	}
 	
-//	@Test
-//	void testThatClaimIsNotAddedBecauseEmployeeDoesNotExist() throws Exception {
-//		List<HolidayClaimDto> claimsBefore = getAllClaims();
-//		Long employeeId = 100L;
-//		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
-//		newClaim = createClaimExpectedNotFound(newClaim, employeeId);
-//		List<HolidayClaimDto> claimsAfter = getAllClaims();
-//
-//		assertThat(claimsBefore).hasSameElementsAs(claimsAfter);
-//		claimsAfter.removeAll(claimsBefore);
-//		assertThat(claimsAfter.size()).isEqualTo(0);		
-//	}
 	
 	@Test
 	void testThatClaimIsApproved() throws Exception {
@@ -115,54 +105,79 @@ private static final String BASE_URI = "/api/holidays";
 		
 		HolidayClaimDto approvedClaim = approveClaim(newClaim.getClaimNumber(), principalUsername, principalPass);
 		System.out.println("TEST: " + approvedClaim);
-//		assertThat(newClaim).usingRecursiveComparison().ignoringFields("isApproved", "principal").isEqualTo(approvedClaim);
-//		assertThat(newClaim).usingRecursiveComparison().ignoringFields("principal").isNotEqualTo(approvedClaim);
-//		assertThat(newClaim).usingRecursiveComparison().ignoringFields("isApproved").isNotEqualTo(approvedClaim);
-		assertThat(newClaim.isApproved()).isNotEqualTo(approvedClaim.isApproved());
+		assertThat(newClaim).usingRecursiveComparison().ignoringFields("isApproved", "principal").isEqualTo(approvedClaim);
+		assertThat(newClaim).usingRecursiveComparison().ignoringFields("principal").isNotEqualTo(approvedClaim);
+		assertThat(newClaim).usingRecursiveComparison().ignoringFields("isApproved").isNotEqualTo(approvedClaim);
+		assertThat(newClaim.getIsApproved()).isNotEqualTo(approvedClaim.getIsApproved());
 	}
 	
-	@Test
-	void testThatClaimIsNotApprovedBecauseClaimDoesNotExist() throws Exception {
-		Long claimId = 100L;
-		Long principalId = 5L;
-		
-		HolidayClaimDto claim = approveClaimExpectedNotFound(claimId, principalId);
-		
-		assertThat(claim.isApproved()).isNull();
-	}
+//	@Test
+//	void testThatClaimIsNotApprovedBecauseClaimDoesNotExist() throws Exception {
+//		Long claimId = 100L;
+//		Long principalId = 5L;
+//		
+//		HolidayClaimDto claim = approveClaimExpectedNotFound(claimId, principalId);
+//		
+//		assertThat(claim.getIsApproved()).isNull();
+//	}
 	
-	@Test
-	void testThatClaimIsNotApprovedBecausePrincipalDoesNotExist() throws Exception {
-		Long claimId = 2L;
-		Long principalId = 105L;
-		
-		HolidayClaimDto claim = approveClaimExpectedNotFound(claimId, principalId);
-		
-		assertThat(claim.isApproved()).isNull();
-	}
+//	@Test
+//	void testThatClaimIsNotApprovedBecausePrincipalDoesNotExist() throws Exception {
+//		Long claimId = 2L;
+//		Long principalId = 105L;
+//		
+//		HolidayClaimDto claim = approveClaimExpectedNotFound(claimId, principalId);
+//		
+//		assertThat(claim.getIsApproved()).isNull();
+//	}
 	
 	@Test
 	void testThatClaimIsModified() throws Exception {
-		Long employeeId = 1L;
+		String username = "user1";
+		String pass = "pass";
+		createTestUser(username, pass);
+		
 		HolidayClaimDto oldClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 2, 10), LocalDate.of(2020, 3, 5));
-		oldClaim = createClaim(oldClaim, employeeId);
+		oldClaim = createClaim(oldClaim, username, pass);
 		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
 		
-		oldClaim = modifyClaim(oldClaim.getClaimNumber(), newClaim);
+		oldClaim = modifyClaim(oldClaim.getClaimNumber(), newClaim, username, pass);
 		
-		assertThat(oldClaim).usingRecursiveComparison().ignoringFields("claimNumber", "claimant").isEqualTo(newClaim);
+		assertThat(oldClaim.getStart()).isEqualTo(newClaim.getStart());
+		assertThat(oldClaim.getEnding()).isEqualTo(newClaim.getEnding());
+		assertThat(oldClaim.getTimeOfApplication()).isEqualTo(newClaim.getTimeOfApplication());
 	}
 	
 	@Test
-	void testThatClaimIsNotModifiedBecauseClaimDoesNotExist() throws Exception {
-		Long claimId = 110L;
-		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+	void testThatClaimIsDeletedIfNotApproved() throws Exception {
+		String username = "user1";
+		String pass = "pass";
+		createTestUser(username, pass);
 		
-		HolidayClaimDto claim = modifyClaimExpectedNotFound(claimId, newClaim);
+		HolidayClaimDto claim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+		claim = createClaim(claim, username, pass);
+		claim.setPrincipal(null);
+		claim = modifyClaim(claim.getClaimNumber(), claim, username, pass);
 		
-		assertThat(claim).usingRecursiveComparison().ignoringFields("claimNumber", "claimant").isNotEqualTo(newClaim);
-		assertThat(claim).usingRecursiveComparison().isEqualTo(new HolidayClaimDto());
+		List<HolidayClaimDto> claimsBefore = getAllClaims(username, pass);
+		assertThat(claimsBefore).contains(claim);
+		
+		deleteClaim(claim.getClaimNumber(), username, pass);
+		
+		List<HolidayClaimDto> claimsAfter = getAllClaims(username, pass);
+		assertThat(claimsAfter).doesNotContain(claim);
 	}
+	
+//	@Test
+//	void testThatClaimIsNotModifiedBecauseClaimDoesNotExist() throws Exception {
+//		Long claimId = 110L;
+//		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
+//		
+//		HolidayClaimDto claim = modifyClaimExpectedNotFound(claimId, newClaim);
+//		
+//		assertThat(claim).usingRecursiveComparison().ignoringFields("claimNumber", "claimant").isNotEqualTo(newClaim);
+//		assertThat(claim).usingRecursiveComparison().isEqualTo(new HolidayClaimDto());
+//	}
 	
 //	@Test
 //	void testThatClaimIsNotModifiedIfApproved() throws Exception {
@@ -177,20 +192,6 @@ private static final String BASE_URI = "/api/holidays";
 //		assertThat(oldClaim).usingRecursiveComparison().isEqualTo(modifiedClaim);
 //	}
 	
-	@Test
-	void testThatClaimIsDeletedIfNotApproved() throws Exception {
-		HolidayClaimDto claim = new HolidayClaimDto(LocalDate.of(2020, 2, 22), LocalDate.of(2020, 2, 25), LocalDate.of(2020, 3, 10));
-		claim = createClaim(claim, 1L);
-		claim.setPrincipal(null);
-		claim = modifyClaim(claim.getClaimNumber(), claim);
-		List<HolidayClaimDto> claimsBefore = getAllClaims();
-		assertThat(claimsBefore).contains(claim);
-		
-		deleteClaim(claim.getClaimNumber());
-		
-		List<HolidayClaimDto> claimsAfter = getAllClaims();
-		assertThat(claimsAfter).doesNotContain(claim);
-	}
 	
 //	@Test
 //	void testThatClaimIsNotDeletedIfApproved() throws Exception {
@@ -208,12 +209,17 @@ private static final String BASE_URI = "/api/holidays";
 	
 	@Test
 	void testSearchForApproval() throws Exception {
-		String paramName = "approved";
-		Boolean paramValue = true;
-		List<HolidayClaimDto> searchResultsForIsApprovedEqualsTrue = getAllClaims().stream()
-				.filter(c -> c.isApproved() == paramValue).collect(Collectors.toList());
+		String username = "user1";
+		String pass = "pass";
+		createTestUser(username, pass);
 		
-		List<HolidayClaimDto> queryResults = searchForIsApproved(paramName, paramValue);
+		HolidayClaimSearchDto search = new HolidayClaimSearchDto();
+		search.setIsApproved(true);
+		
+		List<HolidayClaimDto> searchResultsForIsApprovedEqualsTrue = getAllClaims(username, pass).stream()
+				.filter(c -> c.getIsApproved() != null && c.getIsApproved() == true).collect(Collectors.toList());
+		
+		List<HolidayClaimDto> queryResults = searchForIsApproved(search, username, pass);
 		
 		assertThat(searchResultsForIsApprovedEqualsTrue).hasSameElementsAs(queryResults);		
 	}
@@ -306,14 +312,12 @@ private static final String BASE_URI = "/api/holidays";
 				.getResponseBody();
 	}
 
-	private List<HolidayClaimDto> searchForIsApproved(String paramName, Boolean paramValue) {
+	private List<HolidayClaimDto> searchForIsApproved(HolidayClaimSearchDto search, String username, String pass) {
 		return webTestClient
-				.get()
-				.uri(uriBuilder ->
-						uriBuilder
-						.path(BASE_URI + "/search")
-						.queryParam(paramName, paramValue)
-						.build())
+				.post()
+				.uri(BASE_URI + "/search")
+				.bodyValue(search)
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.exchange()
 				.expectStatus().isOk()
 				.expectBodyList(HolidayClaimDto.class)
@@ -321,10 +325,11 @@ private static final String BASE_URI = "/api/holidays";
 				.getResponseBody();
 	}
 
-	private void deleteClaim(Long claimNumber) {
+	private void deleteClaim(Long claimNumber, String username, String pass) {
 		webTestClient
 			.delete()
 			.uri(BASE_URI + "/delete/" + claimNumber)
+			.headers(headers -> headers.setBasicAuth(username, pass))
 			.exchange()
 			.expectStatus().isOk();			
 	}
@@ -341,10 +346,11 @@ private static final String BASE_URI = "/api/holidays";
 				.getResponseBody();
 	}
 
-	private HolidayClaimDto modifyClaim(Long claimNumber, HolidayClaimDto newClaim) {
+	private HolidayClaimDto modifyClaim(Long claimNumber, HolidayClaimDto newClaim, String username, String pass) {
 		return webTestClient
 				.put()
 				.uri(BASE_URI + "/modify/" + claimNumber)
+				.headers(headers -> headers.setBasicAuth(username, pass))
 				.bodyValue(newClaim)
 				.exchange()
 				.expectStatus().isOk()
@@ -376,18 +382,6 @@ private static final String BASE_URI = "/api/holidays";
 				.getResponseBody();
 	}
 
-	private HolidayClaimDto createClaim(HolidayClaimDto newClaim, Long employeeId) {
-		return webTestClient
-			.post()
-			.uri(BASE_URI + "/" + employeeId)
-			.bodyValue(newClaim)
-			.exchange()
-			.expectStatus().isOk()
-			.expectBody(HolidayClaimDto.class)
-			.returnResult()
-			.getResponseBody();
-	}
-	
 	private HolidayClaimDto createClaim(HolidayClaimDto newClaim, String username, String pass) {
 		return webTestClient
 				.post()

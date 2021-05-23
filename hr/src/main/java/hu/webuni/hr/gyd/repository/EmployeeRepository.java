@@ -31,6 +31,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	
 	Optional<Employee> findByUsername(String username);
 	
-	@Query("select e.principal.employeeId as id, e.principal.username as username from Employee e where e.employeeId = :id")
-	hu.webuni.hr.gyd.security.Employee findPrincipalById(Long id);
+	@Query("select e from Employee e where e.principal.employeeId = :id")
+	List<Employee> findByPrincipalId(Long id);
 }

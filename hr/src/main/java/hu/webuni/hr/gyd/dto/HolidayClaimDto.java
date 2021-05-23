@@ -107,7 +107,7 @@ public class HolidayClaimDto {
 		this.ending = ending;
 	}
 
-	public Boolean isApproved() {
+	public Boolean getIsApproved() {
 		return isApproved;
 	}
 

@@ -62,11 +62,11 @@ public class HolidayClaimSearchDto {
 		this.ending = ending;
 	}
 
-	public Boolean isApproved() {
+	public Boolean getIsApproved() {
 		return isApproved;
 	}
 
-	public void setApproved(Boolean isApproved) {
+	public void setIsApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
 

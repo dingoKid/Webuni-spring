@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import hu.webuni.hr.gyd.security.Employee;
-
 public class HrUserDetails extends User {
 	
 	private String employeeName;	

@@ -35,7 +35,6 @@ public class HolidayClaim {
 		this.start = start;
 		this.ending = ending;
 		this.timeOfApplication = timeOfApplication;
-		this.isApproved = false;
 	}
 
 
@@ -106,7 +105,7 @@ public class HolidayClaim {
 
 
 	public Boolean getIsApproved() {
-		return this.principal == null ? false : true;
+		return isApproved;
 	}
 
 

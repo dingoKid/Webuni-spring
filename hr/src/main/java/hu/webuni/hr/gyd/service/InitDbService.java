@@ -145,7 +145,7 @@ public class InitDbService {
 		HrUser hu3 = new HrUser("szabo1", passwordEncoder.encode("pass"), Set.of("user"));
 		HrUser hu4 = new HrUser("nemeth1", passwordEncoder.encode("pass"), Set.of("user"));
 		HrUser hu5 = new HrUser("magyar1", passwordEncoder.encode("pass"), Set.of("admin", "user"));
-		HrUser hu6 = new HrUser("magyar1", passwordEncoder.encode("pass"), Set.of("admin", "user"));
+		HrUser hu6 = new HrUser("magyar2", passwordEncoder.encode("pass"), Set.of("admin", "user"));
 		HrUser hu7 = new HrUser("horvath1", passwordEncoder.encode("pass"), Set.of("user"));
 		HrUser hu8 = new HrUser("kovacs1", passwordEncoder.encode("pass"), Set.of("user"));
 		HrUser hu9 = new HrUser("marton1", passwordEncoder.encode("pass"), Set.of("user"));
