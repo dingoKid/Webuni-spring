@@ -28,10 +28,14 @@ public class HrUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		HrUser user = userRepository.findById(username).orElseThrow( () -> new UsernameNotFoundException(username) );
 		Employee employee = employeeRepository.findByUsername(username).orElseThrow( () -> new UsernameNotFoundException(username) );
-		return new HrUserDetails(username, user.getPassword(), 
+		HrUserDetails userDetails = new HrUserDetails(username, user.getPassword(), 
 				user.getRoles().stream()
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList()));
+		userDetails.setEmployeeId(employee.getEmployeeId());
+		userDetails.setEmployeeName(employee.getName());
+//		userDetails.setPrincipal(employeeRepository.findPrincipalById(employee.getEmployeeId()));
+		return userDetails;
 	}
 
 }

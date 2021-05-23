@@ -54,16 +54,20 @@ public class HolidayClaimService {
 	@Transactional
 	public HolidayClaim approveClaim(Long claimId) {
 		Long authenticatedUserId = getAuthorizedUserId();
+		System.out.println("ID:" + authenticatedUserId);
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() != null) {
 			throw new ClaimAlreadyApprovedException("Claim is already approved");
 		}	
 		Long claimantPrincipalId = claim.getClaimant().getPrincipal().getEmployeeId();
+		System.out.println("PRID: " + claimantPrincipalId);
 		if(claimantPrincipalId.equals(authenticatedUserId))
 		{
 			Employee principal = employeeRepository.findById(authenticatedUserId).get();
+			System.out.println("PRUSERNAME:" + principal.getUsername());
 			claim.setPrincipal(principal);
 		}
+		System.out.println("CLAIM: " + claim);
 		return claim;
 	}
 

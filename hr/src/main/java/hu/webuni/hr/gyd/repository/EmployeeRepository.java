@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import hu.webuni.hr.gyd.model.Company;
@@ -29,4 +30,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	Optional<Employee> findById(Long id);
 	
 	Optional<Employee> findByUsername(String username);
+	
+	@Query("select e.principal.employeeId as id, e.principal.username as username from Employee e where e.employeeId = :id")
+	hu.webuni.hr.gyd.security.Employee findPrincipalById(Long id);
 }

@@ -28,14 +28,12 @@ public class HolidayClaimDto {
 		this.timeOfApplication = timeOfApplication;
 		this.start = start;
 		this.ending = ending;
-		isApproved = false;
 	}
 
 	public HolidayClaimDto(LocalDate start, LocalDate ending) {
 		this.timeOfApplication = LocalDate.now();
 		this.start = start;
 		this.ending = ending;
-		isApproved = false;
 	}
 	
 	public Long getPrincipalId() {

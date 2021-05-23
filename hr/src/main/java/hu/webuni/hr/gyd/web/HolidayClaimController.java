@@ -57,7 +57,7 @@ public class HolidayClaimController {
 	}
 	
 	@GetMapping("/approve/{claimId}")
-	@PostAuthorize("returnObject.principalId == authentication.principal.employee.employeeId")
+//	@PostAuthorize("returnObject.principalId == authentication.principal.principal.employeeId")
 	public HolidayClaimDto approveClaim(@PathVariable Long claimId) {
 		return holidayClaimMapper.claimToDto(holidayClaimService.approveClaim(claimId));
 	}

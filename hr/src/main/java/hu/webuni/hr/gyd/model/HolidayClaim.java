@@ -113,6 +113,13 @@ public class HolidayClaim {
 	public void setIsApproved(Boolean isApproved) {
 		this.isApproved = isApproved;
 	}
+
+
+	@Override
+	public String toString() {
+		return "HolidayClaim [id=" + id + ", claimant=" + claimant + ", principal=" + principal + ", timeOfApplication="
+				+ timeOfApplication + ", start=" + start + ", ending=" + ending + ", isApproved=" + isApproved + "]";
+	}
 	
 	
 }
