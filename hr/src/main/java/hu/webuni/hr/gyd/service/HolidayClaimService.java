@@ -58,9 +58,10 @@ public class HolidayClaimService {
 		HolidayClaim claim = claimRepository.findById(claimId).orElseThrow(() -> new NoSuchElementException("No claim found with id: " + claimId));
 		if(claim.getPrincipal() != null) {
 			throw new ClaimAlreadyApprovedException("Claim is already approved");
-		}	
-		Long claimantPrincipalId = claim.getClaimant().getPrincipal().getEmployeeId();
-		if(!claimantPrincipalId.equals(authenticatedUserId)) throw new AccessDeniedException("Not authorized");	
+		}
+		if(claim.getClaimant().getPrincipal() == null || 
+				!claim.getClaimant().getPrincipal().getEmployeeId().equals(authenticatedUserId))
+					throw new AccessDeniedException("Not authorized");			
 		
 		Employee principal = employeeRepository.findById(authenticatedUserId).get();
 		claim.setPrincipal(principal);
