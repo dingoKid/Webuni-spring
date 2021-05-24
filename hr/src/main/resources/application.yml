@@ -13,6 +13,9 @@ spring:
 hr:
   def: 5
   smartDefault: 0
+  secret: "secret"
+  issuer: "KD"
+  expiryInMinutes: 12
   
   limits:
     - 2.5

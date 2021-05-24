@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class HrUserDetailsService implements UserDetailsService {
 	EmployeeRepository employeeRepository;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public HrUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		HrUser user = userRepository.findById(username).orElseThrow( () -> new UsernameNotFoundException(username) );
 		Employee employee = employeeRepository.findByUsername(username).orElseThrow( () -> new UsernameNotFoundException(username) );
 		HrUserDetails userDetails = new HrUserDetails(username, user.getPassword(), 
@@ -35,9 +34,16 @@ public class HrUserDetailsService implements UserDetailsService {
 				.collect(Collectors.toList()));
 		userDetails.setEmployeeId(employee.getEmployeeId());
 		userDetails.setEmployeeName(employee.getName());
-		userDetails.setPrincipal(employee.getPrincipal());
-		List<Employee> employees = employeeRepository.findByPrincipalId(employee.getEmployeeId());
+		userDetails.setPrincipalId(employee.getPrincipal().getEmployeeId());
+		userDetails.setPrincipalName(employee.getPrincipal().getName());
+		List<String> employees = employeeRepository.findByPrincipalId(employee.getEmployeeId()).stream()
+				.map(e -> e.getName())
+				.collect(Collectors.toList());
 		userDetails.setEmployees(employees);
+		List<Long> employeeIds = employeeRepository.findByPrincipalId(employee.getEmployeeId()).stream()
+				.map(e -> e.getEmployeeId())
+				.collect(Collectors.toList());
+		userDetails.setEmployeeIds(employeeIds);
 		return userDetails;
 	}
 

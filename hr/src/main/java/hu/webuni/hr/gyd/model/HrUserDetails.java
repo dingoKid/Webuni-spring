@@ -11,8 +11,11 @@ public class HrUserDetails extends User {
 	private String employeeName;	
 	private Long employeeId;
 	
-	private List<Employee> employees;
-	private Employee principal;
+	private List<String> employees;
+	private List<Long> employeeIds;
+	
+	private String principalName;
+	private Long principalId;
 
 	public HrUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, authorities);
@@ -34,39 +37,37 @@ public class HrUserDetails extends User {
 		this.employeeId = employeeId;
 	}
 
-	public List<Employee> getEmployees() {
+	public List<String> getEmployees() {
 		return employees;
 	}
 
-	public void setEmployees(List<Employee> employees) {
+	public void setEmployees(List<String> employees) {
 		this.employees = employees;
 	}
 
-	public Employee getPrincipal() {
-		return principal;
+	public List<Long> getEmployeeIds() {
+		return employeeIds;
 	}
 
-	public void setPrincipal(Employee principal) {
-		this.principal = principal;
-	}
-	
-	
-	
-	/*private Employee employee;
-
-	public HrUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities, Employee employee) {
-		super(username, password, authorities);
-		this.employee = employee;
+	public void setEmployeeIds(List<Long> employeeIds) {
+		this.employeeIds = employeeIds;
 	}
 
-	public Employee getEmployee() {
-		return employee;
+	public String getPrincipalName() {
+		return principalName;
 	}
 
-	public void setEmployee(Employee employee) {
-		this.employee = employee;
-	}*/
-	
-	
+	public void setPrincipalName(String principalName) {
+		this.principalName = principalName;
+	}
+
+	public Long getPrincipalId() {
+		return principalId;
+	}
+
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
+	}
+
 
 }

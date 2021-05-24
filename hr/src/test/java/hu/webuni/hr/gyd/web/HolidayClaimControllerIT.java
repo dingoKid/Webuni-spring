@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -21,9 +23,11 @@ import hu.webuni.hr.gyd.dto.HolidayClaimDto;
 import hu.webuni.hr.gyd.dto.HolidayClaimSearchDto;
 import hu.webuni.hr.gyd.model.Employee;
 import hu.webuni.hr.gyd.model.HrUser;
+import hu.webuni.hr.gyd.model.HrUserDetails;
 import hu.webuni.hr.gyd.repository.EmployeeRepository;
 import hu.webuni.hr.gyd.repository.HolidayClaimRepository;
 import hu.webuni.hr.gyd.repository.HrUserRepository;
+import hu.webuni.hr.gyd.security.JwtService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(OrderAnnotation.class)
@@ -45,6 +49,9 @@ private static final String BASE_URI = "/api/holidays";
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	JwtService jwtService;
 	
 	private final String username = "user1";
 	private final String pass = "pass";
@@ -86,10 +93,19 @@ private static final String BASE_URI = "/api/holidays";
 	
 	@Test
 	void testThatClaimIsAdded() throws Exception {
-		List<HolidayClaimDto> claimsBefore = getAllClaims(username, pass);
+		
+		String token = jwtService.createJwtToken(new HrUserDetails("user1", "pass", Set.of("admin").stream()
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList())));
+		
+		List<HolidayClaimDto> claimsBefore = getAllClaims(token);
+		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
+		newClaim = createClaim(newClaim, token);
+		List<HolidayClaimDto> claimsAfter = getAllClaims(token);
+		/*List<HolidayClaimDto> claimsBefore = getAllClaims(username, pass);
 		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
 		newClaim = createClaim(newClaim, username, pass);
-		List<HolidayClaimDto> claimsAfter = getAllClaims(username, pass);
+		List<HolidayClaimDto> claimsAfter = getAllClaims(username, pass);*/
 
 		claimsAfter.removeAll(claimsBefore);
 		assertThat(claimsAfter.get(0)).usingRecursiveComparison().isEqualTo(newClaim);		
@@ -444,11 +460,36 @@ private static final String BASE_URI = "/api/holidays";
 				.getResponseBody();
 	}
 	
+	private HolidayClaimDto createClaim(HolidayClaimDto newClaim, String token) {
+		return webTestClient
+				.post()
+				.uri(BASE_URI)
+				.headers(headers -> headers.setBearerAuth(token))
+				.bodyValue(newClaim)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
+	
 	private List<HolidayClaimDto> getAllClaims(String username, String pass) {
 		return webTestClient
 				.get()
 				.uri(BASE_URI)
 				.headers(headers -> headers.setBasicAuth(username, pass))
+				.exchange()
+				.expectStatus().isOk()
+				.expectBodyList(HolidayClaimDto.class)
+				.returnResult()
+				.getResponseBody();
+	}
+	
+	private List<HolidayClaimDto> getAllClaims(String token) {
+		return webTestClient
+				.get()
+				.uri(BASE_URI)
+				.headers(headers -> headers.setBearerAuth(token))
 				.exchange()
 				.expectStatus().isOk()
 				.expectBodyList(HolidayClaimDto.class)

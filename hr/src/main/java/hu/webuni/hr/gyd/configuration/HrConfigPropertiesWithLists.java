@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.algorithms.Algorithm;
-
 @ConfigurationProperties(prefix = "hr")
 @Component
 public class HrConfigPropertiesWithLists {
@@ -21,49 +19,38 @@ public class HrConfigPropertiesWithLists {
 	@Value("${hr.smartDefault}")
 	private int smartDefault;
 	
-//	@Value("${hr.secret}")
-//	private String secret;
-//	
-//	@Value("${hr.issuer}")
-//	private String issuer;
-//	
-//	@Value("${hr.expiryInMinutes}")
-//	private int expiryInMinutes;
-//	
-//	@Value("${hr.algorithm}")
-//	private Algorithm algorithm;
+	@Value("${hr.secret}")
+	private String secret;
 	
-//	public String getSecret() {
-//		return secret;
-//	}
-//
-//	public void setSecret(String secret) {
-//		this.secret = secret;
-//	}
-//
-//	public String getIssuer() {
-//		return issuer;
-//	}
-//
-//	public void setIssuer(String issuer) {
-//		this.issuer = issuer;
-//	}
-//
-//	public int getExpiryInMinutes() {
-//		return expiryInMinutes;
-//	}
-//
-//	public void setExpiryInMinutes(int expiryInMinutes) {
-//		this.expiryInMinutes = expiryInMinutes;
-//	}
-//
-//	public Algorithm getAlgorithm() {
-//		return algorithm;
-//	}
-//
-//	public void setAlgorithm(Algorithm algorithm) {
-//		this.algorithm = algorithm;
-//	}
+	@Value("${hr.issuer}")
+	private String issuer;
+	
+	@Value("${hr.expiryInMinutes}")
+	private int expiryInMinutes;
+	
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
+
+	public String getIssuer() {
+		return issuer;
+	}
+
+	public void setIssuer(String issuer) {
+		this.issuer = issuer;
+	}
+
+	public int getExpiryInMinutes() {
+		return expiryInMinutes;
+	}
+
+	public void setExpiryInMinutes(int expiryInMinutes) {
+		this.expiryInMinutes = expiryInMinutes;
+	}
 
 	public List<Object> getLimits() {
 		return limits;

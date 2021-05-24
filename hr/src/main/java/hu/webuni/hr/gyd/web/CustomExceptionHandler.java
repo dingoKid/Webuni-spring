@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -22,6 +23,12 @@ public class CustomExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<MyError> handleClaimAlreadyApprovedException(ClaimAlreadyApprovedException e, WebRequest req) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new MyError(e.getMessage()));
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<MyError> handleAccessDeniedException(AccessDeniedException e, WebRequest req) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
 				.body(new MyError(e.getMessage()));
 	}
 }

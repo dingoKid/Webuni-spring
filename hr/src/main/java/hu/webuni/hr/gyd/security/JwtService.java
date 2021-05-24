@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -24,26 +22,38 @@ public class JwtService {
 	@Autowired
 	HrConfigPropertiesWithLists config;
 	
-//	private final String SECRET = config.getSecret();	
-//	private final String ISSUER = config.getIssuer();
-	
-
 	public String createJwtToken(HrUserDetails principal) {
 		return JWT.create()
 		.withSubject(principal.getUsername())
 		.withArrayClaim("auth", principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new))
-		.withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2)))
-		.withIssuer("KD")
-		.sign(Algorithm.HMAC256("nincs"));		
+		.withClaim("name", principal.getEmployeeName())
+		.withClaim("id", principal.getEmployeeId())
+		.withArrayClaim("employees", principal.getEmployees().toArray(String[]::new))
+		.withArrayClaim("employeesIds", principal.getEmployeeIds().toArray(Long[]::new))
+		.withClaim("principalName", principal.getPrincipalName())
+		.withClaim("principalId", principal.getPrincipalId())
+		.withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(config.getExpiryInMinutes())))
+		.withIssuer(config.getIssuer())
+		.sign(Algorithm.HMAC256(config.getSecret()));	
 	}
 	
-	public UserDetails parseJwt(String jwtToken) {
-		DecodedJWT decodedJwt = JWT.require(Algorithm.HMAC256("nincs"))
-		.withIssuer("KD")
-		.build()
-		.verify(jwtToken);
-		return new User(decodedJwt.getSubject(), "dummy", decodedJwt.getClaim("auth").asList(String.class)
+	public HrUserDetails parseJwt(String jwtToken) {
+		DecodedJWT decodedJwt = JWT.require(Algorithm.HMAC256(config.getSecret()))
+			.withIssuer(config.getIssuer())
+			.build()
+			.verify(jwtToken);
+		
+		HrUserDetails result = new HrUserDetails(decodedJwt.getSubject(), "dummy", decodedJwt.getClaim("auth").asList(String.class)
 				.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+		
+		result.setEmployeeId(decodedJwt.getClaim("id").asLong());
+		result.setEmployeeName(decodedJwt.getClaim("name").asString());
+		result.setEmployees(decodedJwt.getClaim("employees").asList(String.class));
+		result.setEmployeeIds(decodedJwt.getClaim("employeeIds").asList(Long.class));
+		result.setPrincipalId(decodedJwt.getClaim("principalId").asLong());
+		result.setPrincipalName(decodedJwt.getClaim("principalName").asString());
+		
+		return result; 
 	}
 
 }
