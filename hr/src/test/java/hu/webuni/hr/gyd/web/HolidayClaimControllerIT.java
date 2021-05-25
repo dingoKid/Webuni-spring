@@ -67,10 +67,9 @@ private static final String BASE_URI = "/api/holidays";
 			HrUser hu1 = new HrUser(username, passwordEncoder.encode(password), null);
 			hu1 = userRepository.save(hu1);			
 			Employee employee = new Employee();
-			employee.setUsername(username);
+			employee.setUsername(username);			
 			employeeRepository.save(employee);
 		}
-		
 	}
 	
 	private void createPrincipalForUser(String username, String principalUsername, String password) {
@@ -94,18 +93,29 @@ private static final String BASE_URI = "/api/holidays";
 	@Test
 	void testThatClaimIsAdded() throws Exception {
 		
-		String token = jwtService.createJwtToken(new HrUserDetails("user1", "pass", Set.of("admin").stream()
+		List<HolidayClaimDto> claimsBefore = getAllClaims(username, pass);
+		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
+		newClaim = createClaim(newClaim, username, pass);
+		List<HolidayClaimDto> claimsAfter = getAllClaims(username, pass);
+
+		claimsAfter.removeAll(claimsBefore);
+		assertThat(claimsAfter.get(0)).usingRecursiveComparison().isEqualTo(newClaim);		
+	}
+	
+	@Test
+	void testThatClaimIsAddedWithJwt() throws Exception {
+		HrUserDetails ud = new HrUserDetails(username, pass, Set.of("admin").stream()
 				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList())));
+				.collect(Collectors.toList()));
+		
+		ud.setEmployeeId(13L);
+		
+		String token = jwtService.createJwtToken(ud);
 		
 		List<HolidayClaimDto> claimsBefore = getAllClaims(token);
 		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
 		newClaim = createClaim(newClaim, token);
 		List<HolidayClaimDto> claimsAfter = getAllClaims(token);
-		/*List<HolidayClaimDto> claimsBefore = getAllClaims(username, pass);
-		HolidayClaimDto newClaim = new HolidayClaimDto(LocalDate.of(2020, 1, 20), LocalDate.of(2020, 1, 10), LocalDate.of(2020, 3, 5));
-		newClaim = createClaim(newClaim, username, pass);
-		List<HolidayClaimDto> claimsAfter = getAllClaims(username, pass);*/
 
 		claimsAfter.removeAll(claimsBefore);
 		assertThat(claimsAfter.get(0)).usingRecursiveComparison().isEqualTo(newClaim);		
