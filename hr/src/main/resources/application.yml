@@ -16,6 +16,7 @@ hr:
   secret: "secret"
   issuer: "KD"
   expiryInMinutes: 12
+  algorithm: HMAC256
   
   limits:
     - 2.5

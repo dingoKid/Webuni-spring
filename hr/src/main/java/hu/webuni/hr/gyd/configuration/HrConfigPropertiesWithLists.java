@@ -28,6 +28,17 @@ public class HrConfigPropertiesWithLists {
 	@Value("${hr.expiryInMinutes}")
 	private int expiryInMinutes;
 	
+	@Value("${hr.algorithm}")
+	private String algorithm;
+		
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
+	}
+
 	public String getSecret() {
 		return secret;
 	}
