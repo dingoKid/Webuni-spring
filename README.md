@@ -2,9 +2,9 @@
 Webuni learning exercise
 
 Spring boot course with:
-- Spring MVC
+
 - REST
-- DTO-s
+- Spring MVC
 - Integration testing
 - Open API
 - JPA
